@@ -9,6 +9,22 @@ inputs:
     runtime: Nodejs12.16
     framework: express
     name: '${name}'
+    timeout: 10 # 超时时间，单位秒
+    memorySize: 512 # 内存大小，单位MB
+    environments: #  环境变量
+      - key: DB_TEST_HOST
+        value: 10.0.192.16
+      - key: DB_TEST_PORT
+        value: 3306
+      - key: DB_TEST_USER
+        value: root
+      - key: DB_TEST_PASSWORD
+        value: xiayu130828
+      - key: DB_TEST_DATABASE
+        value: test
+    vpc: # 私有网络配置
+      vpcId: 'vpc-4tceuyj1' # 私有网络的Id
+      subnetId: 'subnet-nz8reri4' # 子网ID
   apigw:
     protocols:
       - http
