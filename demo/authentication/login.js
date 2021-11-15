@@ -8,7 +8,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
  * Input: username and password
  * Ouput: usertype or null(failed)
  */
-router.post('/add', async (req, res) => {
+router.post('/login', async (req, res) => {
     // Check if user record matches
     const{username, password} = req.body;
     let sql = ` SELECT username
