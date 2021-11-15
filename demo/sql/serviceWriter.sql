@@ -1,6 +1,4 @@
 INSERT INTO ServiceWriter(username) 
-VALUES("Roland");
-INSERT INTO ServiceWriter(username) 
 VALUES("ServiceWriter1");
 INSERT INTO ServiceWriter(username) 
 VALUES("ServiceWriter2");

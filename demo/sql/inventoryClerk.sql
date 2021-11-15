@@ -1,6 +1,4 @@
 INSERT INTO InventoryClerk(username) 
-VALUES("Roland");
-INSERT INTO InventoryClerk(username) 
 VALUES("InventoryClerk1");
 INSERT INTO InventoryClerk(username) 
 VALUES("InventoryClerk2");
