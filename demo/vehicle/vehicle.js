@@ -162,44 +162,81 @@ router.post('/search_vehicle', async (req, res) => {
 
 
 /**
- * add customer
- * Input: isIndividual -> bool, isBusiness -> bool, (indicating which category the user is adding)
- *     if isIndividual is true, then first_name, last_name, driver_license_number, customer_id is required
- *     if isBusiness is true, then pirmary_contact_name, pirmary_contact_title, tax_id_number, business_name, customer_id is required
+ * add vehicle
+ * Input: vin
+ *     if vehicle not exists, then description, current_date, model_year, invoice_price, manufacturer_name, color, vehicle_type
+ *     if vehicle type == 'Car', then number_of_doors
+ *     if vehicle type == 'Convertible', then roof_type, back_seat_count
+ *     if vehicle type == 'Truck', then cargo_capacity, number_of_rear_axles
+ *     if vehicle type == 'Van/Minivan', then has_drivers_side_door
+ *     if vehicle type == 'SUV', then number_of_cup_holders, drivetrain_type
  * Output: 200 ok if no error, otherwise return 500 http code.
  */
 router.post('/add', async (req, res) => {
-  const { isIndividual, isBusiness } = req.body;
-  const { city, postal_code, state, street_address, phone_number, email } = req.body; // common attributes
+    const { vin } = req.body;
 
-  // step 1: insert a record in customer table with basic information
-  let sql = `INSERT INTO
-            Customer(city, postal_code, state, street_address, phone_number, email)
-            VALUES('${city}', '${postal_code}', '${state}', '${street_address}', '${phone_number}', '${email}');`;
+    // step 1: search vin in vehicle table to check if exists
+    let sql = `SELECT vin 
+                FROM Vehicle
+                WHERE vin = '${vin}'`;
   
-  try {
-    const pool = await database('TEST').pool();
-    const customerRecord = await pool.queryAsync(sql);
-    const { insertId } = customerRecord;  // get the customer_id of newly inserted record
+    try {
+        const pool = await database('TEST').pool();
+        const vehicleRecord = await pool.queryAsync(sql);
+        
+        if (vehicleRecord.length != 0) {
+            res.send({'msg': "Already exists"});
+            return
+        }
 
-    // step 2: insert into Individual or Business table based on which category user selected in frontend
-    if (isIndividual) {
-      const { first_name, last_name, driver_license_number } = req.body;
-      sql = `INSERT INTO
-            Individual(first_name, last_name, driver_license_number, customer_id)
-            VALUES('${first_name}', '${last_name}', '${driver_license_number}', ${insertId});`;
-    } else if (isBusiness) {
-      const { pirmary_contact_name, pirmary_contact_title, tax_id_number, business_name } = req.body;
-      sql = `INSERT INTO
-            Business(pirmary_contact_name, pirmary_contact_title, tax_id_number, business_name, customer_id)
-            VALUES('${pirmary_contact_name}', '${pirmary_contact_title}', '${tax_id_number}', '${business_name}', ${insertId});`;
+        // step 2: insert into Individual or Business table based on which category user selected in frontend
+        const { description, current_date, model_year, invoice_price, manufacturer_name, color, vehicle_type } = req.body;
+        sql = `INSERT INTO Vehicle 
+                    ( vin, description, added_Date, model_year, invoice_price, manufacturer, vehicle_type )
+                VALUES
+                    ( '${vin}', '${description}', '${current_date}', '${model_year}', '${invoice_price}', '${manufacturer_name}', '${vehicle_type}' )`;
+        const result = await pool.queryAsync(sql);
+        color.forEach(element => {
+            sql = `INSERT INTO VehicleColor
+                VALUES ( '${VIN}', '${element}' )`;
+            colorResult = await pool.queryAsync(sql);
+        });
+        
+        switch (vehicle_type) {
+            case "Car":
+                const { number_of_doors } = req.body;
+                sql = `INSERT INTO Car
+                        VALUES ('${vin}', '${number_of_doors}')`;
+                break;
+            case "Convertible":
+                const { roof_type, back_seat_count } = req.body;
+                sql = `INSERT INTO Convertible
+                        VALUES ('${vin}', '${roof_type}', '${back_seat_count}')`;
+                break;
+            case "Truck":
+                const { cargo_capacity, number_of_rear_axles } = req.body;
+                sql = `INSERT INTO Truck
+                        VALUES ('${vin}', '${cargo_capacity}', '${number_of_rear_axles}')`;
+                break;
+            case "SUV":
+                const { number_of_cupholders, drivetrain_type } = req.body;
+                sql = `INSERT INTO SUV
+                        VALUES ('${vin}', '${number_of_cupholders}', '${drivetrain_type}')`;
+                break;
+            default:
+                const { has_drivers_side_back_door } = req.body;
+                sql = `INSERT INTO VanMiniVan
+                        VALUES ('${vin}', '${has_drivers_side_back_door}')`;
+                break;
+        }
+        
+        let add_result = await pool.queryAsync(sql);
+        res.send(add_result);
     }
-    const result = await pool.queryAsync(sql);
-    res.send(result);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send({ error: err });
-  }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ error: err });
+    }
 });
 
 module.exports = router;
