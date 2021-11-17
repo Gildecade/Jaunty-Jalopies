@@ -74,12 +74,13 @@ router.post('/search', async (req, res) => {
             const pool = await database('TEST').pool();
             let result = await pool.queryAsync(sql);
         
+            // if no vehicle exists
             if (result.length == 0) {
-              res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
-        }
+                res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
+            }
         
             res.send(result);
-            } 
+        } 
         catch (err) {
             console.log(err);
             res.status(500).send({ error: err });
@@ -147,6 +148,7 @@ router.post('/search', async (req, res) => {
             const pool = await database('TEST').pool();
             let result = await pool.queryAsync(sql);
         
+            // if no vehicle exists
             if (result.length == 0) {
                 res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
             }
@@ -184,6 +186,7 @@ router.post('/add', async (req, res) => {
         const pool = await database('TEST').pool();
         const vehicleRecord = await pool.queryAsync(sql);
         
+        // if vechile exsits, cannot be added
         if (vehicleRecord.length != 0) {
             res.send({'msg': "Already exists"});
             return
@@ -196,12 +199,15 @@ router.post('/add', async (req, res) => {
                 VALUES
                     ( '${vin}', '${description}', '${current_date}', '${model_year}', '${invoice_price}', '${manufacturer_name}', '${vehicle_type}' )`;
         const result = await pool.queryAsync(sql);
+
+        // insert all color to VehicleColor table
         color.forEach(element => {
             sql = `INSERT INTO VehicleColor
                 VALUES ( '${VIN}', '${element}' )`;
             colorResult = await pool.queryAsync(sql);
         });
         
+        // insert separate information
         switch (vehicle_type) {
             case "Car":
                 const { number_of_doors } = req.body;
@@ -244,12 +250,13 @@ router.post('/add', async (req, res) => {
 /**
  * view vehicle details
  * Input: vin, vehicle_type from Search Vehicle Task
- *     depending on USERNAME and vehicle_type, display different information
+ *     depending on USERNAME and vehicle_type, display different information, use two switch clause
  * Output: 200 ok if no error, otherwise return 500 http code.
  */
  router.post('/view', async (req, res) => {
     const { vin, vehicle_type, USERNAME } = req.body;
 
+    // display different information to different user
     switch (USERNAME) {
         case 'Inventory Clerk':
             switch (vehicle_type) {
@@ -691,6 +698,7 @@ router.post('/add', async (req, res) => {
         const pool = await database('TEST').pool();
         const vehicleDetail = await pool.queryAsync(sql);
         
+        // if no such vehicle, display error
         if (vehicleDetail.length == 0) {
             res.send({'msg': "Not exist"});
             return
