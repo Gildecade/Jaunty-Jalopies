@@ -23,30 +23,30 @@ router.post('/', async (req, res) => {
         // Find user type
         sql = ` SELECT username
                 FROM Owner
-                WHERE username = '${username}'`;
-        let exist1 = await pool.queryAsync(sql);
-        if(exist1.length != 0){
+                WHERE username = '${username[0].username}'`;
+        let exist = await pool.queryAsync(sql);
+        if(exist.length != 0){
             res.send("Owner");
         }
         sql = ` SELECT username
                 FROM InventoryClerk
-                WHERE username = '${username}'`;
-        let exist2 = await pool.queryAsync(sql);
-        if(exist2.length != 0){
+                WHERE username = '${username[0].username}'`;
+        exist = await pool.queryAsync(sql);
+        if(exist.length != 0){
             res.send("Inventory Clerk");
         }
 
         sql = ` SELECT username
                 FROM Salespeople
-                WHERE username = '${username}'`;
-        let exist3 = await pool.queryAsync(sql);
-        if(exist3.length != 0){
+                WHERE username = '${username[0].username}'`;
+        exist = await pool.queryAsync(sql);
+        if(exist.length != 0){
             res.send("Salespeople");
         }
 
         sql = ` SELECT username
                 FROM ServiceWriter
-                WHERE username = '${username}'`;
+                WHERE username = '${username[0].username}'`;
         let exist4 = await pool.queryAsync(sql);
         if(exist4.length != 0){
         res.send("Service Writer");
@@ -54,9 +54,9 @@ router.post('/', async (req, res) => {
 
         sql = ` SELECT username
                 FROM Manager
-                WHERE username = '${username}'`;
-        let exist5 = await pool.queryAsync(sql);
-        if(exist5.length != 0){
+                WHERE username = '${username[0].username}'`;
+        exist = await pool.queryAsync(sql);
+        if(exist.length != 0){
         res.send("Manager");
         }
       } catch (err) {
