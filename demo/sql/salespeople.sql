@@ -1,10 +1,10 @@
 INSERT INTO Salespeople(username) 
-VALUES("Salelspeople1");
+VALUES("Salespeople1");
 INSERT INTO Salespeople(username) 
-VALUES("Salelspeople2");
+VALUES("Salespeople2");
 INSERT INTO Salespeople(username) 
-VALUES("Salelspeople3");
+VALUES("Salespeople3");
 INSERT INTO Salespeople(username) 
-VALUES("Salelspeople4");
+VALUES("Salespeople4");
 
 
