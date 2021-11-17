@@ -6,6 +6,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // api modules
+app.use("/", require("./authentication/login"));
 app.use("/customer", require("./customer/customer"));
 app.use("/viewSales", require("./viewSales/viewSales"));
 // ... add more here
