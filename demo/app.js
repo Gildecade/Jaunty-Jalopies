@@ -9,6 +9,7 @@ app.use(express.json());
 app.use("/", require("./authentication/login"));
 app.use("/customer", require("./customer/customer"));
 app.use("/viewSales", require("./viewSales/viewSales"));
+app.use("/vehicle", require("./vehicle/vehicle"));
 app.use("/viewReport", require("./viewReport/viewReport"));
 // ... add more here
 
