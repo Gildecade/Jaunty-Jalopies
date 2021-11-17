@@ -8,7 +8,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
  * Input: vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME
  * Ouput: Vehicle Record
  */
-router.post('/search_vehicle', async (req, res) => {
+router.post('/search', async (req, res) => {
     const { vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME } = req.body;
   
     // if USERNAME is null, then anonymous search
@@ -148,11 +148,11 @@ router.post('/search_vehicle', async (req, res) => {
             let result = await pool.queryAsync(sql);
         
             if (result.length == 0) {
-              res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
-        }
+                res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
+            }
         
             res.send(result);
-            } 
+        } 
         catch (err) {
             console.log(err);
             res.status(500).send({ error: err });
@@ -236,6 +236,597 @@ router.post('/add', async (req, res) => {
     catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
+    }
+});
+
+
+
+/**
+ * view vehicle details
+ * Input: vin, vehicle_type from Search Vehicle Task
+ *     depending on USERNAME and vehicle_type, display different information
+ * Output: 200 ok if no error, otherwise return 500 http code.
+ */
+ router.post('/view', async (req, res) => {
+    const { vin, vehicle_type, USERNAME } = req.body;
+
+    switch (USERNAME) {
+        case 'Inventory Clerk':
+            switch (vehicle_type) {
+                case 'car':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.number_of_doors as number_of_doors,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Car as c ON v.vin = c.vin
+                                WHERE
+                                    v.vin = '${vin}'`;
+                    break;
+                case 'convertible':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.roof_type as roof_type,
+                                    c.back_seat_count as back_seat_count,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Convertible as c ON v.vin = c.vin                
+                                WHERE vin = '${vin}'`;
+                    break;
+                case 'truck':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.cargo_capacity as cargo_capacity,
+                                    c.cargo_cover_type as cargo_cover_type,
+                                    c.number_of_rear_axles as number_of_rear_axles,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Truck as c ON v.vin = c.vin                
+                                WHERE vin = '${vin}'`;
+                    break;
+                case 'vanMinivan':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.has_drivers_side_back_door as has_drivers_side_back_door,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN VanMinivan as c ON v.vin = c.vin                
+                                WHERE vin = '${vin}'`;
+                    break;
+                default:  // SUV
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.drivetrain_type as drivetrain_type,
+                                    c.number_of _cupholders as number_of _cupholders,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Car as c ON v.vin = c.vin                                
+                                WHERE vin = '${vin}'`
+                    break;
+            }
+            break;
+        case 'Manager':
+            switch (vehicle_type) {
+                case 'car':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.number_of_doors as number_of_doors,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.inventory_clerk_username as inventory_clerk_username,
+                                    v.invoice_price as invoice_price,
+                                    v.added_date as added_date
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Car as c ON v.vin = c.vin                                               
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'covertible':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.roof_type as roof_type,
+                                    c.back_seat_count as back_seat_count,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.inventory_clerk_username as inventory_clerk_username,
+                                    v.invoice_price as invoice_price,
+                                    v.added_date as added_date
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Convertible as c ON v.vin = c.vin                                                             
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'truck':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.cargo_capacity as cargo_capacity,
+                                    c.cargo_cover_type as cargo_cover_type,
+                                    c.number_of_rear_axles as number_of_rear_axles,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.inventory_clerk_username as inventory_clerk_username,
+                                    v.invoice_price as invoice_price,
+                                    v.added_date as added_date
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Truck as c ON v.vin = c.vin                                                               
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'vanMinivan':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.has_drivers_side_back_door as has_drivers_side_back_door,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.inventory_clerk_username as inventory_clerk_username,
+                                    v.invoice_price as invoice_price,
+                                    v.added_date as added_date
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN VanMinivan as c ON v.vin = c.vin                                               
+                                WHERE vin = '${vin}'`
+                    break;
+                default:  // SUV
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.drivetrain_type as drivetrain_type,
+                                    c.number_of _cupholders as number_of _cupholders,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.inventory_clerk_username as inventory_clerk_username,
+                                    v.invoice_price as invoice_price,
+                                    v.added_date as added_date
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Car as c ON v.vin = c.vin                                                               
+                                WHERE vin = '${vin}'`
+                    break;
+            }
+        case 'Owner':
+            switch (vehicle_type) {
+                case 'car':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.number_of_doors as number_of_doors,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Car as c ON v.vin = c.vin                                               
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'covertible':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.roof_type as roof_type,
+                                    c.back_seat_count as back_seat_count,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Convertible as c ON v.vin = c.vin                                                                             
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'truck':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.cargo_capacity as cargo_capacity,
+                                    c.cargo_cover_type as cargo_cover_type,
+                                    c.number_of_rear_axles as number_of_rear_axles,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Truck as c ON v.vin = c.vin                                                                               
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'vanMinivan':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.has_drivers_side_back_door as has_drivers_side_back_door,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN VanMinivan as c ON v.vin = c.vin                                                               
+                                WHERE vin = '${vin}'`
+                    break;
+                default:  // SUV
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.drivetrain_type as drivetrain_type,
+                                    c.number_of _cupholders as number_of _cupholders,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description,
+                                    v.invoice_price as invoice_price
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Car as c ON v.vin = c.vin                                                                               
+                                WHERE vin = '${vin}'`
+                    break;
+            }
+        default:  // Anonymous user and Salesperson
+            switch (vehicle_type) {
+                case 'car':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.number_of_doors as number_of_doors,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Car as c ON v.vin = c.vin                                             
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'convertible':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.roof_type as roof_type,
+                                    c.back_seat_count as back_seat_count,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25 as list_price,
+                                    v.description as description
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Convertible as c ON v.vin = c.vin                                                             
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'truck':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.cargo_capacity as cargo_capacity,
+                                    c.cargo_cover_type as cargo_cover_type,
+                                    c.number_of_rear_axles as number_of_rear_axles,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25  as list_price,
+                                    v.description as description
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Truck as c ON v.vin = c.vin                                                            
+                                WHERE vin = '${vin}'`
+                    break;
+                case 'vanMinivan':
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.has_drivers_side_back_door as has_drivers_side_back_door,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    vc.color as color,
+                                    v.invoice_price*1.25  as list_price,
+                                    v.description as description
+                                FROM
+                                    Vehicle as v
+                                    JOIN VehicleColor as vc ON v.vin = vc.vin
+                                    JOIN VanMinivan as c ON v.vin = c.vin                                                    
+                                WHERE vin = '${vin}'`
+                    break;
+                default:  // SUV
+                    let sql = `SELECT
+                                    v.vin as vin,
+                                    v.vehicle_type as vehicle_type,
+                                    c.drivetrain_type as drivetrain_type,
+                                    c.number_of _cupholders as number_of _cupholders,
+                                    v.model_year as model_year,
+                                    v.model_name as model_name,
+                                    v.manufacturer as manufacturer,
+                                    GROUP_CONCAT(vc.color) as color,
+                                    v.invoice_price*1.25  as list_price,
+                                    v.description as description
+                                FROM
+                                    VehicleColor as vc
+                                    GROUP BY vc.vin
+                                    JOIN Vehicle as v
+                                    ON v.vin = vc.vin 
+                                    JOIN Car as c ON v.vin = c.vin                                                             
+                                WHERE vin = '${vin}'`
+                    break;
+            }
+            break;
+    }
+  
+    try {
+        const pool = await database('TEST').pool();
+        const vehicleDetail = await pool.queryAsync(sql);
+        
+        if (vehicleDetail.length == 0) {
+            res.send({'msg': "Not exist"});
+            return
+        }
+
+        res.send(vehicleDetail);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ error: err });
+    }
+
+    // special sale record display for manager and owner
+    if (USERNAME == 'Manager' || 'Owner') {
+        sql = `SELECT vin 
+                FROM Sale
+                WHERE vin = '${vin}'`;
+
+        try {
+            const pool = await database('TEST').pool();
+            const vin = await pool.queryAsync(sql);
+            
+            // if exists, vehicle is sold, display sale information
+            if (vin.length != 0) {
+                // assume it's individual customer first
+                sql = `SELECT 
+                            c.city as city,
+                            c.postal_code as postal_code,
+                            c.state as state,
+                            c.street_address as street_address,
+                            c.phone_number as phone_number,
+                            c.email as email,
+                            CONCAT(i.first_name, “”, i.last_name) as customer_name,
+                            v.invoice_price as invoice_price,
+                            s.sold_price as sold_price,
+                            s.purchase_date as purchase_date,
+                            CONCAT(u.first_name, “ ”, u.last_name) as salesperson_name
+                        FROM
+                            Sale s
+                        JOIN Vehicle v ON s.vin = v.vin
+                        JOIN Customer c ON s.customer_id = c.id
+                        JOIN Individual i ON s.customer_id = i.customer_id
+                        JOIN User u ON u.username = s.salespeople_username
+                        WHERE s.vin = '${vin}'`;
+                // check if it's individual customer
+                const sale_info = await pool.queryAsync(sql);
+
+                // if it's business customer
+                if(sale_info.length == 0) {
+                    sql = `SELECT 
+                                c.city as city,
+                                c.postal_code as postal_code,
+                                c.state as state,
+                                c.street_address as street_address,
+                                c.phone_number as phone_number,
+                                c.email as email,
+                                b.business_name as business_name,
+                                b.primary_contact_title as primary_contact_title,
+                                b.primary_contact_name as primary_contact_name,
+                                v.invoice_price as invoice_price,
+                                s.sold_price as sold_price,
+                                s.purchase_date as purchase_date,
+                                CONCAT(u.first_name, “ ”, u.last_name) as salesperson_name
+                            FROM
+                                Sale s
+                            JOIN Vehicle v ON s.vin = v.vin
+                            JOIN Customer c ON s.customer_id = c.id
+                            JOIN Business b ON s.customer_id = b.customer_id
+                            JOIN User u ON u.username = s.salespeople_username
+                            WHERE s.vin = '${vin}'`;
+                    sale_info = await pool.queryAsync(sql);
+                }
+                res.send(sale_info);
+            }
+        }
+        catch (err) {
+            console.log(err);
+            res.status(500).send({ error: err });
+        }
+    }
+
+    // special repair record display for manager and owner
+    if (USERNAME == 'Manager' || 'Owner') {
+        sql = `SELECT vin 
+                FROM Repair
+                WHERE vin = '${vin}'`;
+
+        try {
+            const pool = await database('TEST').pool();
+            const vin = await pool.queryAsync(sql);
+            
+            // if exists, vehicle has been repaired, display repair information
+            if (vin.length != 0) {
+                // assume it's individual customer first
+                sql = `SELECT 
+                            CONCAT(i.first_name, “ ”, i.last_name) as customer_name,
+                            CONCAT(u.first_name, “ ”, u.last_name) as service_writer_name,
+                            r.start_date as start_date,
+                            r.complete_date as end_date,
+                            r.labor_charge as labor charges,
+                            r.parts_cost as parts_cost,
+                            (r.parts_cost + r.parts_cost) as total cost
+                        FROM
+                            Repair r
+                        JOIN Customer c ON c.id = r.customer_id
+                        JOIN Individual i ON c.id = i.customer_id
+                        JOIN User u ON u.username = r.service_writer_username                
+                        WHERE r.vin = '${vin}'`;
+                // check if it's individual customer
+                const repair_info = await pool.queryAsync(sql);
+
+                // if it's business customer
+                if(repair_info.length == 0) {
+                    sql = `SELECT 
+                                b.business_name as customer_name,
+                                CONCAT(u.first_name, “ ”, u.last_name) as service_writer_name,
+                                r.start_date as start_date,
+                                r.complete_date as end_date,
+                                r.labor_charge as labor charges,
+                                r.parts_cost as parts_cost,
+                                (r.parts_cost + r.parts_cost) as total cost
+                            FROM
+                                Repair r
+                            JOIN Customer c ON c.id = r.customer_id
+                            JOIN Business b ON c.id = b.customer_id
+                            JOIN User u ON u.username = r.service_writer_username                    
+                            WHERE r.vin = '${vin}'`;
+                    repair_info = await pool.queryAsync(sql);
+                }
+                res.send(repair_info);
+            }
+        }
+        catch (err) {
+            console.log(err);
+            res.status(500).send({ error: err });
+        }
     }
 });
 
