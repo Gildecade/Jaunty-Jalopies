@@ -8,6 +8,7 @@ app.use(express.json());
 // api modules
 app.use("/customer", require("./customer/customer"));
 app.use("/viewSales", require("./viewSales/viewSales"));
+app.use("/repair", require("./repair/repair"));
 // ... add more here
 
 
