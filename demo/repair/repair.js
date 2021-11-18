@@ -37,10 +37,7 @@ router.post('/view', async (req, res) => {
               ON r.vin = vc.vin
               WHERE r.vin = '${vin}'`; 
       let result = await pool.queryAsync(sql);
-      res.send({
-        'msg': "success",
-        'res': result,
-      });
+      res.send(result);
     } catch (err) {
       console.log(err);
       res.status(500).send({ error: err });
@@ -67,10 +64,7 @@ router.post('/view', async (req, res) => {
     try {
       const pool = await database('TEST').pool();
       const result = await pool.queryAsync(sql);
-      res.send({
-        'msg': 'success',
-        'res': result,
-      });
+      res.send(result);
     } catch (err) {
       console.log(err);
       res.status(500).send({ error: err });
@@ -88,7 +82,10 @@ router.post('/view', async (req, res) => {
     try {
       const pool = await database('TEST').pool();
       const charge_res = await pool.queryAsync(sql);
-      let old_labor_charge = charge_res[0].old_labor_charge;
+      let old_labor_charge = 0;
+      if (charge_res.length != 0) {
+        old_labor_charge = charge_res[0].old_labor_charge;
+      }
       sql = `UPDATE Repair
                 SET labor_charge = '${labor_charge}'
                 WHERE vin = '${vin}' and start_date = '${start_date}';`;
@@ -102,10 +99,7 @@ router.post('/view', async (req, res) => {
       } else if (USER_TYPE == 'Owner') {
         result = await pool.queryAsync(sql);
       }
-      res.send({
-        'msg': 'success',
-        'res': result,
-      });
+      res.send(result);
     } catch (err) {
       console.log(err);
       res.status(500).send({ error: err });
@@ -127,10 +121,7 @@ router.post('/view', async (req, res) => {
     try {
       const pool = await database('TEST').pool();
       const result = await pool.queryAsync(sql);
-      res.send({
-        'msg': 'success',
-        'res': result,
-      });
+      res.send(result);
     } catch (err) {
       console.log(err);
       res.status(500).send({ error: err });
@@ -160,10 +151,7 @@ router.post('/view', async (req, res) => {
               WHERE vin = '${vin}' and start_date = '${start_date}';`
       const pool = await database('TEST').pool();
       const result = await pool.queryAsync(sql);
-      res.send({
-        'msg': 'success',
-        'res': result,
-      });
+      res.send(result);
     } catch (err) {
       console.log(err);
       res.status(500).send({ error: err });
