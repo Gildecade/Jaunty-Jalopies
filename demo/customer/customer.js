@@ -30,6 +30,7 @@ router.post('/lookup', async (req, res) => {
 
     if (customerId.length == 0) {
       res.send(null);
+      return;
     }
 
     sql = `SELECT id, city, postal_code, state, street_address, phone_number, email 
