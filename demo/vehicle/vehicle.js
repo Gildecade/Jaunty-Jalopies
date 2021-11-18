@@ -17,17 +17,9 @@ router.post('/search', async (req, res) => {
     if (!USERNAME) {
         if (operand == '>') {
             sql = `SELECT
-                        v.vin as vin,
-                        v.vehicle_type as vehicle_type,
-                        v.model_year as model_year,
-                        v.manufacturer as manufacturer,
-                        v.model_name as model_name,
-                        v.description as description,
-                        GROUP_CONCAT(vc.color) as color,
-                        v.invoice_price*1.25 as list_price
+                        v.vin as vin
                     FROM
-                        VehicleColor as vc
-                        GROUP BY vc.vin
+                        VehicleColor as vc    
                         JOIN Vehicle as v
                         ON v.vin = vc.vin 
                     WHERE
@@ -37,24 +29,16 @@ router.post('/search', async (req, res) => {
                         AND v.model_year = '${model_year}' 
                         AND v.invoice_price*1.25 > '${list_price}' 
                         AND v.description LIKE "%'${key_word}'%" 
-                            AND NOT IN 
+                            AND v.vin NOT IN 
                         ( SELECT vin 
                         FROM Sale s )
                     ORDER BY vin ASC`;
         } 
         else {
             sql = `SELECT
-                        v.vin as vin,
-                        v.vehicle_type as vehicle_type,
-                        v.model_year as model_year,
-                        v.manufacturer as manufacturer,
-                        v.model_name as model_name,
-                        v.description as description,
-                        GROUP_CONCAT(vc.color) as color,
-                        v.invoice_price*1.25 as list_price
+                        v.vin as vin
                     FROM
                         VehicleColor as vc
-                        GROUP BY vc.vin
                         JOIN Vehicle as v
                         ON v.vin = vc.vin 
                     WHERE
@@ -64,59 +48,70 @@ router.post('/search', async (req, res) => {
                         AND v.model_year = '${model_year}' 
                         AND v.invoice_price*1.25 < '${list_price}' 
                         AND v.description LIKE "%'${key_word}'%" 
-                            AND NOT IN 
+                            AND v.vin NOT IN 
                         ( SELECT vin 
                         FROM Sale s )
                     ORDER BY vin ASC`;
-        }
-
-        try {
-            const pool = await database('TEST').pool();
-            let result = await pool.queryAsync(sql);
-        
-            // if no vehicle exists
-            if (result.length == 0) {
-                res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
-            }
-        
-            res.send(result);
-        } 
-        catch (err) {
-            console.log(err);
-            res.status(500).send({ error: err });
         }
     }
     else{
         if (operand == '>') {
             sql = `SELECT
-                        v.vin as vin,
-                        v.vehicle_type as vehicle_type,
-                        v.model_year as model_year,
-                        v.manufacturer as manufacturer,
-                        v.model_name as model_name,
-                        v.description as description,
-                        GROUP_CONCAT(vc.color) as color,
-                        v.invoice_price*1.25 as list_price
+                        v.vin as vin
                     FROM
-                        VehicleColor as vc
-                        GROUP BY vc.vin
+                        VehicleColor as vc    
                         JOIN Vehicle as v
                         ON v.vin = vc.vin 
                     WHERE
-                        v.vin = '${vin}'
+                    v.vin = '${vin}'
                         v.vehicle_type = '${vehicle_type}' 
                         AND vc.color = '${color}' 
                         AND v.manufacturer = '${manufacturer_name}' 
                         AND v.model_year = '${model_year}' 
                         AND v.invoice_price*1.25 > '${list_price}' 
                         AND v.description LIKE "%'${key_word}'%" 
-                            AND NOT IN 
+                            AND v.vin NOT IN 
                         ( SELECT vin 
                         FROM Sale s )
                     ORDER BY vin ASC`;
         } 
         else {
             sql = `SELECT
+                        v.vin as vin
+                    FROM
+                        VehicleColor as vc    
+                        JOIN Vehicle as v
+                        ON v.vin = vc.vin 
+                    WHERE
+                    v.vin = '${vin}'
+                        v.vehicle_type = '${vehicle_type}' 
+                        AND vc.color = '${color}' 
+                        AND v.manufacturer = '${manufacturer_name}' 
+                        AND v.model_year = '${model_year}' 
+                        AND v.invoice_price*1.25 < '${list_price}' 
+                        AND v.description LIKE "%'${key_word}'%" 
+                            AND v.vin NOT IN 
+                        ( SELECT vin 
+                        FROM Sale s )
+                    ORDER BY vin ASC`;
+        }
+    }
+    
+    try {
+        const pool = await database('TEST').pool();
+        let result = await pool.queryAsync(sql);
+    
+        // if no vehicle exists
+        if (result.length == 0) {
+            res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
+        }
+
+        var vin_list = new Array();
+        for (var i = 0; i <= result.length(); ++i) {
+            vin_list[i] = result[i].vin;
+        }
+
+        let sql = `SELECT
                         v.vin as vin,
                         v.vehicle_type as vehicle_type,
                         v.model_year as model_year,
@@ -127,38 +122,18 @@ router.post('/search', async (req, res) => {
                         v.invoice_price*1.25 as list_price
                     FROM
                         VehicleColor as vc
-                        GROUP BY vc.vin
                         JOIN Vehicle as v
                         ON v.vin = vc.vin 
                     WHERE
-                        v.vin = '${vin}'
-                        v.vehicle_type = '${vehicle_type}' 
-                        AND vc.color = '${color}' 
-                        AND v.manufacturer = '${manufacturer_name}' 
-                        AND v.model_year = '${model_year}' 
-                        AND v.invoice_price*1.25 < '${list_price}' 
-                        AND v.description LIKE "%'${key_word}'%" 
-                            AND NOT IN 
-                        ( SELECT vin 
-                        FROM Sale s )
+                        v.vin IN '${vin_list}'
+                    GROUP BY vc.vin
                     ORDER BY vin ASC`;
-        }
-
-        try {
-            const pool = await database('TEST').pool();
-            let result = await pool.queryAsync(sql);
-        
-            // if no vehicle exists
-            if (result.length == 0) {
-                res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
-            }
-        
-            res.send(result);
-        } 
-        catch (err) {
-            console.log(err);
-            res.status(500).send({ error: err });
-        }
+        let result = await pool.queryAsync(sql);
+        res.send(result);
+    } 
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ error: err });
     }
 });
 
