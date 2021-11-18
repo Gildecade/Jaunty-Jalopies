@@ -86,4 +86,39 @@ router.post('/add', async (req, res) => {
   }
 });
 
+/**
+ * lookup customer by id
+ * Input: customer_id
+ * Output: customer information
+ */
+ router.post('/lookup/:id', async (req, res) => {
+   const { id } = req.params;
+
+  // step 1: find Customer detail in Customer table
+  let sql = `SELECT * FROM Customer WHERE id = ${id}`;
+  
+  try {
+    const pool = await database('TEST').pool();
+    const customerData = await pool.queryAsync(sql);
+    if (customerData.length === 0) {
+      res.send([]); // return empty array
+      return;
+    }
+
+    sql = `SELECT * FROM Individual WHERE customer_id = ${id}`
+    const individualData = await pool.queryAsync(sql);
+    if (individualData.length !== 0) {
+      res.send({ customerData, individualData });
+      return;
+    }
+
+    sql = `SELECT * FROM Business WHERE customer_id = ${id}`;
+    const businessData = await pool.queryAsync(sql);
+    res.send({ customerData, businessData });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ error: err });
+  }
+});
+
 module.exports = router;
