@@ -61,10 +61,7 @@ router.post('/', async (req, res) => {
                 FROM Manager
                 WHERE username = '${username[0].username}'`;
         exist = await pool.queryAsync(sql);
-        if(exist.length != 0){
-                res.send("Manager");
-                return;
-        }
+        res.send(exist.length==0 ? null : "Manager");
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });

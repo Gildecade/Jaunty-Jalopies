@@ -43,10 +43,7 @@ router.post("/grossCustomerIncome", async(req, res) => {
             res.send(null);
             return;
         }
-        var customer_id_list = new Array();
-        for(var i=0;i<gross_customer_income.length;i++){
-            customer_id_list[i]=gross_customer_income[i].customer_id;
-        }
+        const customer_id_list = gross_customter_income.map(f => f.customer_id);
         sql = 
         `SELECT customer_id,
         count(1) as number_of_sales
@@ -90,11 +87,7 @@ router.post("/grossCustomerIncome/sales", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
         
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -123,11 +116,7 @@ router.post("/grossCustomerIncome/repairs", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
         
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -154,11 +143,7 @@ router.post("/repairReport", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
         
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -184,11 +169,7 @@ router.post("/repairReport/type", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
 
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -215,11 +196,7 @@ router.post("/repairReport/model", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
 
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -252,11 +229,7 @@ router.post("/belowCostSale", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
 
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -276,11 +249,7 @@ router.post("/averageTime", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
 
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -300,11 +269,7 @@ router.post("/partStatistics", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
 
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -330,11 +295,7 @@ router.post("/monthlySales", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
 
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
@@ -360,11 +321,7 @@ router.post("/monthlySales/details", async(req, res) => {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
 
-        if (result.length == 0) {
-          res.send(null);
-          return;
-        }
-        res.send(result);
+        res.send(result.length==0 ? null : result);
         return;
       } catch (err) {
         console.log(err);
