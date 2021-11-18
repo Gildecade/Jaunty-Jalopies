@@ -19,6 +19,7 @@ router.post('/', async (req, res) => {
         let username = await pool.queryAsync(sql);
         if (username.length == 0) {
           res.send(null);
+          return;
         }
         // Find user type
         sql = ` SELECT username
@@ -27,6 +28,7 @@ router.post('/', async (req, res) => {
         let exist = await pool.queryAsync(sql);
         if(exist.length != 0){
             res.send("Owner");
+            return;
         }
         sql = ` SELECT username
                 FROM InventoryClerk
@@ -34,6 +36,7 @@ router.post('/', async (req, res) => {
         exist = await pool.queryAsync(sql);
         if(exist.length != 0){
             res.send("Inventory Clerk");
+            return;
         }
 
         sql = ` SELECT username
@@ -41,7 +44,8 @@ router.post('/', async (req, res) => {
                 WHERE username = '${username[0].username}'`;
         exist = await pool.queryAsync(sql);
         if(exist.length != 0){
-            res.send("Salespeople");
+                res.send("Salespeople");
+                return;
         }
 
         sql = ` SELECT username
@@ -49,7 +53,8 @@ router.post('/', async (req, res) => {
                 WHERE username = '${username[0].username}'`;
         let exist4 = await pool.queryAsync(sql);
         if(exist4.length != 0){
-        res.send("Service Writer");
+                res.send("Service Writer");
+                return;
         }
 
         sql = ` SELECT username
@@ -57,7 +62,8 @@ router.post('/', async (req, res) => {
                 WHERE username = '${username[0].username}'`;
         exist = await pool.queryAsync(sql);
         if(exist.length != 0){
-        res.send("Manager");
+                res.send("Manager");
+                return;
         }
       } catch (err) {
         console.log(err);

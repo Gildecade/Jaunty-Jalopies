@@ -41,6 +41,7 @@ router.post("/grossCustomerIncome", async(req, res) => {
         let gross_customer_income = await pool.queryAsync(sql);
         if(gross_customer_income.length==0){
             res.send(null);
+            return;
         }
         var customer_id_list = new Array();
         for(var i=0;i<gross_customer_income.length;i++){
@@ -91,8 +92,10 @@ router.post("/grossCustomerIncome/sales", async(req, res) => {
         
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -122,8 +125,10 @@ router.post("/grossCustomerIncome/repairs", async(req, res) => {
         
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -151,8 +156,10 @@ router.post("/repairReport", async(req, res) => {
         
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -179,8 +186,10 @@ router.post("/repairReport/type", async(req, res) => {
 
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -208,8 +217,10 @@ router.post("/repairReport/model", async(req, res) => {
 
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -243,8 +254,10 @@ router.post("/belowCostSale", async(req, res) => {
 
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -265,8 +278,10 @@ router.post("/averageTime", async(req, res) => {
 
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -287,8 +302,10 @@ router.post("/partStatistics", async(req, res) => {
 
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -315,8 +332,10 @@ router.post("/monthlySales", async(req, res) => {
 
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -343,8 +362,10 @@ router.post("/monthlySales/details", async(req, res) => {
 
         if (result.length == 0) {
           res.send(null);
+          return;
         }
         res.send(result);
+        return;
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
