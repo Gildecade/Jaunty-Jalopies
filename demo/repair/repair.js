@@ -36,7 +36,7 @@ router.post('/view', async (req, res) => {
               LEFT JOIN VehicleColor vc
               ON r.vin = vc.vin
               WHERE r.vin = '${vin}'`; 
-      const result = await pool.queryAsync(sql);
+      let result = await pool.queryAsync(sql);
       res.send({
         'msg': "success",
         'res': result,
@@ -51,7 +51,9 @@ router.post('/view', async (req, res) => {
   // Add repair
   router.post('/add', async (req, res) => {
     const { vin, odometer, description, customer_id, USERNAME } = req.body;
-    const { start_date } = new Date().toLocaleDateString().replace(/\//g,"-");
+    let date = new Date().toLocaleDateString().replace(/\//g,"-").toString();
+    let date_arr = date.split('-');
+    let start_date = date_arr[2] + '-' + date_arr[0] + '-' + date_arr[1];
   
     if (!customer_id) {
       res.send({'msg': "No customer selected or data verification failed"});
@@ -85,11 +87,12 @@ router.post('/view', async (req, res) => {
     
     try {
       const pool = await database('TEST').pool();
-      const old_labor_charge = await pool.queryAsync(sql);
+      const charge_res = await pool.queryAsync(sql);
+      let old_labor_charge = charge_res[0].old_labor_charge;
       sql = `UPDATE Repair
                 SET labor_charge = '${labor_charge}'
                 WHERE vin = '${vin}' and start_date = '${start_date}';`;
-      const result;
+      let result;
       if (USER_TYPE == 'Service writer') {
         if (old_labor_charge > labor_charge) {
           res.send({'msg': 'Labor charges cannot lower than before'});
@@ -113,7 +116,9 @@ router.post('/view', async (req, res) => {
   // Complete repair
   router.post('/complete', async (req, res) => {
     const { vin, start_date } = req.body;
-    const { complete_date } = new Date().toLocaleDateString().replace(/\//g,"-");
+    let date = new Date().toLocaleDateString().replace(/\//g,"-").toString();
+    let date_arr = date.split('-');
+    let complete_date = date_arr[2] + '-' + date_arr[0] + '-' + date_arr[1];
     
     let sql = `UPDATE Repair 
                 SET complete_date = '${complete_date}'
@@ -139,7 +144,7 @@ router.post('/view', async (req, res) => {
     
     let sql = `INSERT INTO 
                 Part (vin, start_date, part_number, vendor_name, price, quantity)
-                VALUES('${vin}', '${start_date}', '${part_number}', '${quantity}', '${vendor_name}', '${price}');`;
+                VALUES('${vin}', '${start_date}', '${part_number}', '${quantity}', '${price}', '${quantity}');`;
     
     try {
       const pool = await database('TEST').pool();
