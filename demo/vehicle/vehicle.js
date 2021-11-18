@@ -8,7 +8,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
  * Input: vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME
  * Ouput: Vehicle Record
  */
-router.post('/search', async (req, res) => {
+ router.post('/search', async (req, res) => {
     const { vin, vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME } = req.body;
   
     // if USERNAME is null, then anonymous search
@@ -31,15 +31,15 @@ router.post('/search', async (req, res) => {
                 JOIN Vehicle as v
                 ON v.vin = vc.vin 
             WHERE
-                1 = 1`;
+                1 = 1 `;
 
-    sql_vin = (USERNAME && vin) ? v.vin = `AND v.vin = '${vin}'` : "";
-    sql_vehicle_type = vehicle_type ? "" : `AND v.vehicle_type = '${vehicle_type}'`;
-    sql_color = color ? "" : `AND vc.color = '${color}'`;
-    sql_manufacturer_name = manufacturer_name ? "" : `AND v.manufacturer = '${manufacturer_name}'`
-    sql_model_year = model_year ? "" : `AND v.model_year = '${model_year}'`
-    sql_list_price = (list_price && operand) ? "" : `AND v.invoice_price*1.25 ${operand} '${list_price}'`
-    sql_key_word = key_word ? "" : `AND v.description LIKE "%'${key_word}'%"`
+    sql_vin = (USERNAME && vin) ? v.vin = `AND v.vin = '${vin}' ` : "";
+    sql_vehicle_type = vehicle_type ? `AND v.vehicle_type = '${vehicle_type}' `: "";
+    sql_color = color ? `AND vc.color = '${color}' `: "";
+    sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
+    sql_model_year = model_year ? `AND v.model_year = '${model_year}' `: "";
+    sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} '${list_price}' `: "";
+    sql_key_word = key_word ? `AND v.description LIKE "%'${key_word}'%" `: "";
 
     sql2 =     `AND v.vin NOT IN 
                     ( SELECT vin 
@@ -60,14 +60,9 @@ router.post('/search', async (req, res) => {
             return;
         }
 
-        var vin_list = new Array();
-        for (var i = 0; i <= result.length(); ++i) {
-            vin_list[i] = result[i].vin;
-        }
+        const vin_list = result.map(f => f.vin);
 
-        const customer_id_list = gross_customter_income.map(f => f.customer_id);
-
-        let sql = `SELECT
+        let sqlnext = `SELECT
                         v.vin as vin,
                         v.vehicle_type as vehicle_type,
                         v.model_year as model_year,
@@ -81,10 +76,10 @@ router.post('/search', async (req, res) => {
                         JOIN Vehicle as v
                         ON v.vin = vc.vin 
                     WHERE
-                        v.vin IN '${vin_list}'
+                        v.vin IN (${vin_list})
                     GROUP BY vc.vin
                     ORDER BY vin ASC`;
-        let result = await pool.queryAsync(sql);
+        result = await pool.queryAsync(sqlnext);
         res.send(result);
         return;
     } 
