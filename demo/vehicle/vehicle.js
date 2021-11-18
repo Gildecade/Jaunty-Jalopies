@@ -9,93 +9,46 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
  * Ouput: Vehicle Record
  */
 router.post('/search', async (req, res) => {
-    const { vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME } = req.body;
+    const { vin, vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME } = req.body;
   
     // if USERNAME is null, then anonymous search
     // else can use vin to search
     let sql;
-    if (!USERNAME) {
-        if (operand == '>') {
-            sql = `SELECT
-                        v.vin as vin
-                    FROM
-                        VehicleColor as vc    
-                        JOIN Vehicle as v
-                        ON v.vin = vc.vin 
-                    WHERE
-                        v.vehicle_type = '${vehicle_type}' 
-                        AND vc.color = '${color}' 
-                        AND v.manufacturer = '${manufacturer_name}' 
-                        AND v.model_year = '${model_year}' 
-                        AND v.invoice_price*1.25 > '${list_price}' 
-                        AND v.description LIKE "%'${key_word}'%" 
-                            AND v.vin NOT IN 
-                        ( SELECT vin 
-                        FROM Sale s )
-                    ORDER BY vin ASC`;
-        } 
-        else {
-            sql = `SELECT
-                        v.vin as vin
-                    FROM
-                        VehicleColor as vc
-                        JOIN Vehicle as v
-                        ON v.vin = vc.vin 
-                    WHERE
-                        v.vehicle_type = '${vehicle_type}' 
-                        AND vc.color = '${color}' 
-                        AND v.manufacturer = '${manufacturer_name}' 
-                        AND v.model_year = '${model_year}' 
-                        AND v.invoice_price*1.25 < '${list_price}' 
-                        AND v.description LIKE "%'${key_word}'%" 
-                            AND v.vin NOT IN 
-                        ( SELECT vin 
-                        FROM Sale s )
-                    ORDER BY vin ASC`;
-        }
-    }
-    else{
-        if (operand == '>') {
-            sql = `SELECT
-                        v.vin as vin
-                    FROM
-                        VehicleColor as vc    
-                        JOIN Vehicle as v
-                        ON v.vin = vc.vin 
-                    WHERE
-                    v.vin = '${vin}'
-                        v.vehicle_type = '${vehicle_type}' 
-                        AND vc.color = '${color}' 
-                        AND v.manufacturer = '${manufacturer_name}' 
-                        AND v.model_year = '${model_year}' 
-                        AND v.invoice_price*1.25 > '${list_price}' 
-                        AND v.description LIKE "%'${key_word}'%" 
-                            AND v.vin NOT IN 
-                        ( SELECT vin 
-                        FROM Sale s )
-                    ORDER BY vin ASC`;
-        } 
-        else {
-            sql = `SELECT
-                        v.vin as vin
-                    FROM
-                        VehicleColor as vc    
-                        JOIN Vehicle as v
-                        ON v.vin = vc.vin 
-                    WHERE
-                    v.vin = '${vin}'
-                        v.vehicle_type = '${vehicle_type}' 
-                        AND vc.color = '${color}' 
-                        AND v.manufacturer = '${manufacturer_name}' 
-                        AND v.model_year = '${model_year}' 
-                        AND v.invoice_price*1.25 < '${list_price}' 
-                        AND v.description LIKE "%'${key_word}'%" 
-                            AND v.vin NOT IN 
-                        ( SELECT vin 
-                        FROM Sale s )
-                    ORDER BY vin ASC`;
-        }
-    }
+    let sql1;
+    let sql2;
+    let sql_vin;
+    let sql_vehicle_type;
+    let sql_color;
+    let sql_manufacturer_name;
+    let sql_model_year;
+    let sql_list_price;
+    let sql_key_word;
+    
+    sql1 = `SELECT
+                v.vin as vin
+            FROM
+                VehicleColor as vc    
+                JOIN Vehicle as v
+                ON v.vin = vc.vin 
+            WHERE
+                1 = 1`;
+
+    sql_vin = (USERNAME && vin) ? v.vin = `AND v.vin = '${vin}'` : "";
+    sql_vehicle_type = vehicle_type ? "" : `AND v.vehicle_type = '${vehicle_type}'`;
+    sql_color = color ? "" : `AND vc.color = '${color}'`;
+    sql_manufacturer_name = manufacturer_name ? "" : `AND v.manufacturer = '${manufacturer_name}'`
+    sql_model_year = model_year ? "" : `AND v.model_year = '${model_year}'`
+    sql_list_price = (list_price && operand) ? "" : `AND v.invoice_price*1.25 ${operand} '${list_price}'`
+    sql_key_word = key_word ? "" : `AND v.description LIKE "%'${key_word}'%"`
+
+    sql2 =     `AND v.vin NOT IN 
+                    ( SELECT vin 
+                    FROM Sale s )
+                ORDER BY vin ASC`;
+
+    sql = sql1 + sql_vin + sql_vehicle_type + sql_color + sql_manufacturer_name 
+    + sql_model_year + sql_list_price + sql_key_word + sql2;            
+      
     
     try {
         const pool = await database('TEST').pool();
@@ -111,6 +64,8 @@ router.post('/search', async (req, res) => {
         for (var i = 0; i <= result.length(); ++i) {
             vin_list[i] = result[i].vin;
         }
+
+        const customer_id_list = gross_customter_income.map(f => f.customer_id);
 
         let sql = `SELECT
                         v.vin as vin,
