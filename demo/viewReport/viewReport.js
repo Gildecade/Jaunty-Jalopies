@@ -43,23 +43,42 @@ router.post("/grossCustomerIncome", async(req, res) => {
             res.send(null);
             return;
         }
-        const customer_id_list = gross_customter_income.map(f => f.customer_id);
+        const customer_id_list = gross_customer_income.map(f => f.customer_id);
+        
+        sql = 
+        `SELECT customer_id,
+        count(1) as number_of_repairs
+        FROM Repair
+        GROUP BY customer_id
+        HAVING customer_id
+        IN (${customer_id_list});`;
+        let customer_repair = await pool.queryAsync(sql);
+        let repair_dic = {};
+        customer_repair.forEach(element => {
+          repair_dic[element.customer_id] = element.number_of_repairs
+        });
+
         sql = 
         `SELECT customer_id,
         count(1) as number_of_sales
         FROM Sale
         GROUP BY customer_id
         HAVING customer_id
-        IN '${customer_list};'`;
+        IN (${customer_id_list});`;
+        let customer_sale = await pool.queryAsync(sql);
+        let sale_dic = {};
+        customer_sale.forEach(element => {
+          sale_dic[element.customer_id] = element.number_of_sales
+        });
+        
+        gross_customer_income.forEach(function(element){
+          element.number_of_repairs=repair_dic[element.customer_id];
+          element.number_of_sales=sale_dic[element.customer_id];
+        });
 
-        sql = 
-        `SELECT customer_id,
-        count(1) as number_of_sales
-        FROM Repair
-        GROUP BY customer_id
-        HAVING customer_id
-        IN '${customer_list};'`;
-
+        res.send(gross_customer_income);
+        return;
+        
       } catch (err) {
         console.log(err);
         res.status(500).send({ error: err });
@@ -259,12 +278,9 @@ router.post("/averageTime", async(req, res) => {
 
 // view parts statistics
 router.post("/partStatistics", async(req, res) => {
-    let sql = `SELECT t1.vehicle_type as vehicle_type,
-    avg(datediff(t2.purchase_date, t1.added_date)) as average_time
-    FROM Vehicle t1
-    INNER JOIN Sale t2
-    ON t1.vin = t2.vin
-    GROUP BY vehicle_type;`;
+    let sql = `SELECT vendor_name, sum(quantity) as number_of_parts, sum(price*quantity) as total_spent
+    FROM Part
+    GROUP BY vendor_name;`;
     try {
         const pool = await database('TEST').pool();
         let result = await pool.queryAsync(sql);
