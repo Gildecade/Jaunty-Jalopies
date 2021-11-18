@@ -14,8 +14,8 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     // if USERNAME is null, then anonymous search
     // else can use vin to search
     let sql;
-    let sql1;
-    let sql2;
+    let sql_head;
+    let sql_tail;
     let sql_vin;
     let sql_vehicle_type;
     let sql_color;
@@ -24,7 +24,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     let sql_list_price;
     let sql_key_word;
     
-    sql1 = `SELECT
+    sql_head = `SELECT
                 v.vin as vin
             FROM
                 VehicleColor as vc    
@@ -41,13 +41,13 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} '${list_price}' `: "";
     sql_key_word = key_word ? `AND v.description LIKE "%'${key_word}'%" `: "";
 
-    sql2 =     `AND v.vin NOT IN 
+    sql_tail =     `AND v.vin NOT IN 
                     ( SELECT vin 
                     FROM Sale s )
                 ORDER BY vin ASC`;
 
-    sql = sql1 + sql_vin + sql_vehicle_type + sql_color + sql_manufacturer_name 
-    + sql_model_year + sql_list_price + sql_key_word + sql2;            
+    sql = sql_head + sql_vin + sql_vehicle_type + sql_color + sql_manufacturer_name 
+    + sql_model_year + sql_list_price + sql_key_word + sql_tail;            
       
     
     try {
@@ -62,7 +62,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
 
         const vin_list = result.map(f => f.vin);
 
-        let sqlnext = `SELECT
+        let sql2 = `SELECT
                         v.vin as vin,
                         v.vehicle_type as vehicle_type,
                         v.model_year as model_year,
@@ -79,7 +79,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
                         v.vin IN (${vin_list})
                     GROUP BY vc.vin
                     ORDER BY vin ASC`;
-        result = await pool.queryAsync(sqlnext);
+        result = await pool.queryAsync(sql2);
         res.send(result);
         return;
     } 
@@ -102,7 +102,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
  *     if vehicle type == 'SUV', then number_of_cup_holders, drivetrain_type
  * Output: 200 ok if no error, otherwise return 500 http code.
  */
-router.post('/add', async (req, res) => {
+ router.post('/add', async (req, res) => {
     const { vin } = req.body;
 
     // step 1: search vin in vehicle table to check if exists
@@ -120,47 +120,55 @@ router.post('/add', async (req, res) => {
             return;
         }
 
-        // step 2: insert into Individual or Business table based on which category user selected in frontend
-        const { description, current_date, model_year, invoice_price, manufacturer_name, color, vehicle_type } = req.body;
+        // step 2: insert into Vehicle table and know which vehicle type
+        const { description, current_date, model_year, invoice_price, manufacturer_name, color, vehicle_type, USERNAME } = req.body;
         sql = `INSERT INTO Vehicle 
-                    ( vin, description, added_Date, model_year, invoice_price, manufacturer, vehicle_type )
+                    ( vin, description, added_Date, model_year, invoice_price, manufacturer, vehicle_type, inventory_clerk_username )
                 VALUES
-                    ( '${vin}', '${description}', '${current_date}', '${model_year}', '${invoice_price}', '${manufacturer_name}', '${vehicle_type}' )`;
-        const result = await pool.queryAsync(sql);
+                    ( '${vin}', '${description}', '${current_date}', '${model_year}', '${invoice_price}', '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
 
+        const vehicleInsert = await pool.queryAsync(sql);  
+           
+        let color_list = color.split(", ");
+        sql = `INSERT INTO VehicleColor( vin, color )`;
         // insert all color to VehicleColor table
-        color.forEach(element => {
-            sql = `INSERT INTO VehicleColor
-                VALUES ( '${VIN}', '${element}' )`;
-            colorResult = await pool.queryAsync(sql);
-        });
+        for (let i = 0; i < color_list.length; ++i) {
+            // last line no comma
+            if (i == color_list.length - 1) {
+                sql += `( '${vin}', '${color_list[i]}' )\n`;
+            }
+            else {
+                sql += `( '${vin}', '${color_list[i]}' ),\n`;
+            }
+        }
+        const colorInsert = await pool.queryAsync(sql);
         
         // insert separate information
         switch (vehicle_type) {
-            case "Car":
+            case "car":
                 const { number_of_doors } = req.body;
-                sql = `INSERT INTO Car
-                        VALUES ('${vin}', '${number_of_doors}')`;
+                sql += `INSERT INTO Car
+                        VALUES ('${vin}', '${number_of_doors}');\n`;
                 break;
-            case "Convertible":
+            case "convertible":
                 const { roof_type, back_seat_count } = req.body;
-                sql = `INSERT INTO Convertible
-                        VALUES ('${vin}', '${roof_type}', '${back_seat_count}')`;
+                sql += `INSERT INTO Convertible
+                        VALUES ('${vin}', '${roof_type}', '${back_seat_count}');\n`;
                 break;
-            case "Truck":
+            case "truck":
                 const { cargo_capacity, number_of_rear_axles } = req.body;
                 sql = `INSERT INTO Truck
-                        VALUES ('${vin}', '${cargo_capacity}', '${number_of_rear_axles}')`;
+                        VALUES ('${vin}', '${cargo_capacity}', '${number_of_rear_axles}');\n`;
                 break;
             case "SUV":
                 const { number_of_cupholders, drivetrain_type } = req.body;
                 sql = `INSERT INTO SUV
-                        VALUES ('${vin}', '${number_of_cupholders}', '${drivetrain_type}')`;
+                        VALUES ('${vin}', '${number_of_cupholders}', '${drivetrain_type}');\n`;
                 break;
             default:
                 const { has_drivers_side_back_door } = req.body;
                 sql = `INSERT INTO VanMiniVan
-                        VALUES ('${vin}', '${has_drivers_side_back_door}')`;
+                        VALUES ('${vin}', '${has_drivers_side_back_door}');\n`;
                 break;
         }
         
@@ -174,6 +182,7 @@ router.post('/add', async (req, res) => {
         return;
     }
 });
+
 
 
 module.exports = router;
