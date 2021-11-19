@@ -33,7 +33,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
             WHERE
                 1 = 1 `;
 
-    sql_vin = (USERNAME && vin) ? v.vin = `AND v.vin = '${vin}' ` : "";
+    sql_vin = (USERNAME && vin) ? v.vin = `AND v.vin = ${vin} ` : "";
     sql_vehicle_type = vehicle_type ? `AND v.vehicle_type = '${vehicle_type}' `: "";
     sql_color = color ? `AND vc.color = '${color}' `: "";
     sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
@@ -130,15 +130,17 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         const vehicleInsert = await pool.queryAsync(sql);  
            
         let color_list = color.split(", ");
-        sql = `INSERT INTO VehicleColor( vin, color )`;
+        sql = `INSERT INTO VehicleColor( vin, color )
+        VALUES
+        `;
         // insert all color to VehicleColor table
         for (let i = 0; i < color_list.length; ++i) {
             // last line no comma
             if (i == color_list.length - 1) {
-                sql += `( '${vin}', '${color_list[i]}' )\n`;
+                sql += `( '${vin}', '${color_list[i]}' );`;
             }
             else {
-                sql += `( '${vin}', '${color_list[i]}' ),\n`;
+                sql += `( '${vin}', '${color_list[i]}' ),`;
             }
         }
         const colorInsert = await pool.queryAsync(sql);
@@ -147,28 +149,28 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         switch (vehicle_type) {
             case "car":
                 const { number_of_doors } = req.body;
-                sql += `INSERT INTO Car
-                        VALUES ('${vin}', '${number_of_doors}');\n`;
+                sql = `INSERT INTO Car
+                        VALUES (${vin}, '${number_of_doors}');`;
                 break;
             case "convertible":
                 const { roof_type, back_seat_count } = req.body;
-                sql += `INSERT INTO Convertible
-                        VALUES ('${vin}', '${roof_type}', '${back_seat_count}');\n`;
+                sql = `INSERT INTO Convertible
+                        VALUES ('${vin}', '${roof_type}', '${back_seat_count}');`;
                 break;
             case "truck":
                 const { cargo_capacity, number_of_rear_axles } = req.body;
                 sql = `INSERT INTO Truck
-                        VALUES ('${vin}', '${cargo_capacity}', '${number_of_rear_axles}');\n`;
+                        VALUES ('${vin}', '${cargo_capacity}', '${number_of_rear_axles}');`;
                 break;
             case "SUV":
                 const { number_of_cupholders, drivetrain_type } = req.body;
                 sql = `INSERT INTO SUV
-                        VALUES ('${vin}', '${number_of_cupholders}', '${drivetrain_type}');\n`;
+                        VALUES ('${vin}', '${number_of_cupholders}', '${drivetrain_type}');`;
                 break;
             default:
                 const { has_drivers_side_back_door } = req.body;
                 sql = `INSERT INTO VanMiniVan
-                        VALUES ('${vin}', '${has_drivers_side_back_door}');\n`;
+                        VALUES ('${vin}', '${has_drivers_side_back_door}');`;
                 break;
         }
         
@@ -182,7 +184,6 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         return;
     }
 });
-
 
 
 module.exports = router;
