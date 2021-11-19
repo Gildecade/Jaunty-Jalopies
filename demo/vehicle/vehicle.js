@@ -13,18 +13,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
   
     // if USERNAME is null, then anonymous search
     // else can use vin to search
-    let sql;
-    let sql_head;
-    let sql_tail;
-    let sql_vin;
-    let sql_vehicle_type;
-    let sql_color;
-    let sql_manufacturer_name;
-    let sql_model_year;
-    let sql_list_price;
-    let sql_key_word;
-    
-    sql_head = `SELECT
+    let sql_head = `SELECT
                 v.vin as vin
             FROM
                 VehicleColor as vc    
@@ -33,20 +22,20 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
             WHERE
                 1 = 1 `;
 
-    sql_vin = (USERNAME && vin) ? v.vin = `AND v.vin = ${vin} ` : "";
-    sql_vehicle_type = vehicle_type ? `AND v.vehicle_type = '${vehicle_type}' `: "";
-    sql_color = color ? `AND vc.color = '${color}' `: "";
-    sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
-    sql_model_year = model_year ? `AND v.model_year = '${model_year}' `: "";
-    sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} '${list_price}' `: "";
-    sql_key_word = key_word ? `AND v.description LIKE "%'${key_word}'%" `: "";
+    let sql_vin = (USERNAME && vin) ? `AND v.vin = ${vin} ` : "";
+    let sql_vehicle_type = vehicle_type ? `AND v.vehicle_type = '${vehicle_type}' `: "";
+    let sql_color = color ? `AND vc.color = '${color}' `: "";
+    let sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
+    let sql_model_year = model_year ? `AND v.model_year = ${model_year} `: "";
+    let sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} ${list_price} `: "";
+    let sql_key_word = key_word ? `AND v.description LIKE "%'${key_word}'%" `: "";
 
-    sql_tail =     `AND v.vin NOT IN 
+    let sql_tail =     `AND v.vin NOT IN 
                     ( SELECT vin 
                     FROM Sale s )
                 ORDER BY vin ASC`;
 
-    sql = sql_head + sql_vin + sql_vehicle_type + sql_color + sql_manufacturer_name 
+    let sql = sql_head + sql_vin + sql_vehicle_type + sql_color + sql_manufacturer_name 
     + sql_model_year + sql_list_price + sql_key_word + sql_tail;            
       
     
@@ -108,7 +97,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     // step 1: search vin in vehicle table to check if exists
     let sql = `SELECT vin 
                 FROM Vehicle
-                WHERE vin = '${vin}'`;
+                WHERE vin = ${vin}`;
   
     try {
         const pool = await database('TEST').pool();
@@ -125,7 +114,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         sql = `INSERT INTO Vehicle 
                     ( vin, description, added_Date, model_year, invoice_price, manufacturer, vehicle_type, inventory_clerk_username )
                 VALUES
-                    ( '${vin}', '${description}', '${current_date}', '${model_year}', '${invoice_price}', '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
+                    ( ${vin}, '${description}', '${current_date}', ${model_year}, ${invoice_price}, '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
 
         const vehicleInsert = await pool.queryAsync(sql);  
            
@@ -137,10 +126,10 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         for (let i = 0; i < color_list.length; ++i) {
             // last line no comma
             if (i == color_list.length - 1) {
-                sql += `( '${vin}', '${color_list[i]}' );`;
+                sql += `( ${vin}, '${color_list[i]}' );`;
             }
             else {
-                sql += `( '${vin}', '${color_list[i]}' ),`;
+                sql += `( ${vin}, '${color_list[i]}' ),`;
             }
         }
         const colorInsert = await pool.queryAsync(sql);
@@ -150,27 +139,29 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
             case "car":
                 const { number_of_doors } = req.body;
                 sql = `INSERT INTO Car
-                        VALUES (${vin}, '${number_of_doors}');`;
+                        VALUES (${vin}, ${number_of_doors});`;
                 break;
             case "convertible":
                 const { roof_type, back_seat_count } = req.body;
                 sql = `INSERT INTO Convertible
-                        VALUES ('${vin}', '${roof_type}', '${back_seat_count}');`;
+                        VALUES (${vin}, '${roof_type}', ${back_seat_count});`;
                 break;
             case "truck":
-                const { cargo_capacity, number_of_rear_axles } = req.body;
-                sql = `INSERT INTO Truck
-                        VALUES ('${vin}', '${cargo_capacity}', '${number_of_rear_axles}');`;
+                const { cargo_capacity, cargo_cover_type, number_of_rear_axles } = req.body;
+                sql = cargo_cover_type? `INSERT INTO Truck
+                VALUES (${vin}, ${cargo_capacity}, ${cargo_cover_type}, ${number_of_rear_axles});`: 
+                `INSERT INTO Truck(vin, cargo_capacity, number_of_rear_axles)
+                VALUES (${vin}, ${cargo_capacity}, ${number_of_rear_axles});`;
                 break;
             case "SUV":
                 const { number_of_cupholders, drivetrain_type } = req.body;
-                sql = `INSERT INTO SUV
-                        VALUES ('${vin}', '${number_of_cupholders}', '${drivetrain_type}');`;
+                sql = `INSERT INTO Suv
+                        VALUES (${vin}, ${number_of_cupholders}, '${drivetrain_type}');`;
                 break;
             default:
                 const { has_drivers_side_back_door } = req.body;
-                sql = `INSERT INTO VanMiniVan
-                        VALUES ('${vin}', '${has_drivers_side_back_door}');`;
+                sql = `INSERT INTO VanMinivan
+                        VALUES (${vin}, ${has_drivers_side_back_door});`;
                 break;
         }
         
