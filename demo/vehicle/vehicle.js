@@ -176,5 +176,60 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     }
 });
 
+/**
+ * view details of a vehicle
+ * Input: vin, usertype
+ * Ouput: 
+ *    if usertype == null (Anonymous): 
+ *      show VIN, vehicle_type, vehicle type attributes, Model Year, Model Name, Manufacturer, color(s), list price, description;
+ *    if usertype == 'Inventory Clerks':
+ *      show all above, and invoice_price;
+ *    if usertype == 'Salespeople':
+ *      same as 'Inventory Clerks'
+ *    if usertype == 'Service Writer':
+ *      same as 'Inventory Clerks'
+ *    if usertype == 'Manager':
+ *      all information: inventory_clerk_name, invoice_price, added_date,
+ *      if vehicle is sold, also need to fetch data from Sales table
+ *      if vehicle has any repair, also need to fetch data from Repair table
+ *    if usertype == 'Owner':
+ *      same as 'Manager'
+ */
+ router.post('/view', async (req, res) => {
+    const { vin, vehicle_type, usertype } = req.body;
+  
+    let type;
+    if (vehicle_type == 'car') type = 'Car';
+    else if (vehicle_type == 'convertible') type = 'Convertible';
+    else if (vehicle_type == 'suv') type = 'Suv';
+    else if (vehicle_type == 'truck') type = 'Truck';
+    else if (vehicle_type == 'vanMinivan') type = 'VanMinivan';
+    else {
+      res.status(400).send({msg: 'Bad parameter'});
+      return;
+    }
+    let sql = `SELECT * FROM ${type} WHERE vin = ${vin}`;
+    
+    try {
+      const pool = await database('TEST').pool();
+      const vehicleTypeData = await pool.queryAsync(sql);
+  
+      if (!usertype || usertype == 'Inventory Clerks' || usertype == 'Salespeople' || usertype == 'Service Writer') {
+        res.send({ vehicleTypeData });
+      } else {  // if usertype is Manager or Owner, we still need to find information about Sales and Repair
+        sql = `SELECT * FROM Sale WHERE vin = ${vin}`;
+        const saleData = await pool.queryAsync(sql);
+  
+        sql = `SELECT * FROM Repair WHERE vin = ${vin}`;
+        const repairData = await pool.queryAsync(sql);
+  
+        res.send({ vehicleTypeData, saleData, repairData });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({error: err});
+    }
+  });
+  
 
 module.exports = router;
