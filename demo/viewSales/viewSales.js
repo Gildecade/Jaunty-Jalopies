@@ -137,7 +137,7 @@ router.post("/byManufacturer", async(req, res) => {
       const timestamp = new Date(vin.purchase_date).getTime();
       const manufacturer = vin.manufacturer;
 
-      result[manufacturer] = { past30Days: 0, pastYear: 0, allTime: 0 };
+      report[manufacturer] = { past30Days: 0, pastYear: 0, allTime: 0 };
       report[manufacturer]["allTime"] += 1;
       if (timestamp >= currentTimestamp - 60 * 60 * 24 * 1000 * 365) {  // within last year
         report[manufacturer]["pastYear"] += 1;
