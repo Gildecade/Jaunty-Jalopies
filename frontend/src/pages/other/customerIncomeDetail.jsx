@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Select, message, Descriptions, Table } from 'antd';
+import { Form, Input, Button, Select, message,  Table } from 'antd';
 import { domain } from '../../config';
 import { useParams } from 'react-router-dom';
 
@@ -139,6 +139,9 @@ const CustomerIncomeDetail = () => {
         <div>
             <h1>Customer Repair History</h1>
             <Table columns={repairColumns} dataSource={repairData}></Table>
+        </div>
+        <div>
+            <Button Type="link" href="/grossCustomerIncome">Cancel</Button>
         </div>
     </div> 
     :
