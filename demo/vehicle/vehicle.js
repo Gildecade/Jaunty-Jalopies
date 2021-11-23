@@ -28,7 +28,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     let sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
     let sql_model_year = model_year ? `AND v.model_year = ${model_year} `: "";
     let sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} ${list_price} `: "";
-    let sql_key_word = key_word ? `AND v.description LIKE "%'${key_word}'%" `: "";
+    let sql_key_word = key_word ? `AND v.description LIKE "%${key_word}%" `: "";
 
     let sql_tail =     `AND v.vin NOT IN 
                     ( SELECT vin 
