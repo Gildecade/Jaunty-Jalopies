@@ -20,6 +20,12 @@ import SalesByColorTable from './pages/sales/salesByColor';
 import SalesByTypeTable from './pages/sales/salesByType';
 import SalesByManufacturerTable from './pages/sales/salesByManufacturer';
 import VehicleDetail from './pages/vehicle/vehicleDetail';
+import GrossCustomerIncome from './pages/other/grossCustomerIncome';
+import RepairReport from './pages/repair/repairReport';
+import BelowCostSales from './pages/sales/belowCostSales';
+import InventoryTime from './pages/other/inventoryTime';
+import PartsStatistics from './pages/parts/partsStatistics';
+import MonthlySales from './pages/sales/monthlySale';
 // TODO: import more components here
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -51,23 +57,22 @@ const App = () => {
             <Menu.Item key="6">View Repair</Menu.Item>
             <Menu.Item key="7">Add Repair</Menu.Item>
             <Menu.Item key="8">Edit Repair</Menu.Item>
-            <Menu.Item key="9">View Repair Report</Menu.Item>
+            <Menu.Item key="9"><Link to="/repairReport">View Repair Report</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="parts" icon={<TeamOutlined />} title="parts">
             <Menu.Item key="10">Add Parts</Menu.Item>
-            <Menu.Item key="11">View Parts Statistics</Menu.Item>
+            <Menu.Item key="11"><Link to="/partsStatistics">View Parts Statistics</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="sales" icon={<FileOutlined />} title="sales">
             <Menu.Item key="12"><Link to="/byColor">Viwe Sales By Color</Link></Menu.Item>
             <Menu.Item key="13"><Link to="/byType">Viwe Sales By Type</Link></Menu.Item>
             <Menu.Item key="14"><Link to="/byManufacturer">Viwe Sales By Manufacturer</Link></Menu.Item>
-            <Menu.Item key="15">Viwe Monthly Sales</Menu.Item>
+            <Menu.Item key="15"><Link to="/monthlySales">View Monthly Sales</Link></Menu.Item>
+            <Menu.Item key="17"><Link to="/belowCostSales">View Below Cost Sales</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="other" icon={<FileOutlined />} title="other">
-            <Menu.Item key="16">Viwe Gross Customer Income</Menu.Item>
-            <Menu.Item key="17">View Below Cost Sales</Menu.Item>
-            <Menu.Item key="18">Viwe Average Time in Inventory</Menu.Item>
-            <Menu.Item key="19">Viwe Monthly Sales</Menu.Item>
+            <Menu.Item key="16"><Link to="/grossCustomerIncome">View Gross Customer Income</Link></Menu.Item>
+            <Menu.Item key="18"><Link to="/inventoryTime">View Average Time in Inventory</Link></Menu.Item>
           </SubMenu>
         </Menu>
       </Sider>
@@ -84,6 +89,12 @@ const App = () => {
               <Route path="/byType" element={<SalesByTypeTable />} />
               <Route path="/byManufacturer" element={<SalesByManufacturerTable />} />
               <Route path="/vehicle/:id/:vehicle_type" element={<VehicleDetail />} />
+              <Route path="/grossCustomerIncome" element={<GrossCustomerIncome />} />
+              <Route path="/repairReport" element={<RepairReport />} />
+              <Route path="/belowCostSales" element={<BelowCostSales />} />
+              <Route path="/inventoryTime" element={<InventoryTime />} />
+              <Route path="/partsStatistics" element={<PartsStatistics />} />
+              <Route path="/monthlySales" element={<MonthlySales />} />
               {/* TODO: Register more routes here...... */}
             </Routes>
           </div>
