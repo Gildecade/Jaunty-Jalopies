@@ -54,14 +54,14 @@ const SalesByColorTable = () => {
 
 
   return (
-    // localStorage.getItem('usertype') === "Owner" ?
+    localStorage.getItem('usertype') === "Owner" || localStorage.getItem('usertype') === "Manager" ?
     <div>
       <Table columns={columns} dataSource={data}></Table>
     </div>
-    // :
-    // <div>
-    //   <h1>No Access to this page. Please login as Owner.</h1>
-    // </div>
+    :
+    <div>
+      <h1>No Access to this page. Please login as Owner.</h1>
+    </div>
   );
 }
 
