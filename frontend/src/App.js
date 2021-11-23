@@ -27,6 +27,7 @@ import InventoryTime from './pages/other/inventoryTime';
 import PartsStatistics from './pages/parts/partsStatistics';
 import MonthlySales from './pages/sales/monthlySale';
 import CustomerIncomeDetail from './pages/other/customerIncomeDetail';
+import RepairReportDetail from './pages/repair/repairReportDetail';
 // TODO: import more components here
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -97,6 +98,7 @@ const App = () => {
               <Route path="/partsStatistics" element={<PartsStatistics />} />
               <Route path="/monthlySales" element={<MonthlySales />} />
               <Route path="/customerIncome/:customer_id" element={<CustomerIncomeDetail />} />
+              <Route path="/repairReportDetail/:manufacturer" element={<RepairReportDetail />} />
               {/* TODO: Register more routes here...... */}
             </Routes>
           </div>

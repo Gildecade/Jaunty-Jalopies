@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, message, Tag, Space } from 'antd';
 import { domain } from '../../config';
+import {
+    Link
+  } from "react-router-dom";
 
 import axios from 'axios';
 
@@ -59,9 +62,11 @@ const RepairReport = () => {
         title: 'Action',
         key: 'action',
         render: (text, record) => (
-          <Space size="middle">
-            <a>View Details</a>
-          </Space>
+            <Link to={`/repairReportDetail/${record.manufacturer}`}>
+            <Space size="middle">
+              <a>View Details</a>
+            </Space>
+            </Link>
         ),
       },
 
