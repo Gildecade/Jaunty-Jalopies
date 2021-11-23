@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Select, message, Descriptions } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { domain } from '../../config';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
@@ -9,13 +9,38 @@ import axios from 'axios';
 const Authentication = () => {
   const [form] = Form.useForm();
 
-  const login = (values) => {
-    console.log('Finish:', values);
+  const [usertype, setUsertype] = useState(null);
+
+  useEffect(() => {
+    const usertype = localStorage.getItem('usertype');
+    setUsertype(usertype);
+  }, []);
+
+  const login = async (values) => {
+    try {
+      const result = await axios.post(`${domain}`, {...values});
+      if (!result.data || result.data.length === 0) {
+        message.error("Wrong username or password. Please check agian.");
+      } else {
+        message.success(`Successfully logged in as ${result.data}`);
+        localStorage.setItem("usertype", result.data);
+        setUsertype(result.data);
+      }
+    } catch (err) {
+      message.error("Internal error. Try again.");
+      console.log(err);
+    }
   };
+
+  const logout = () => {
+    message.success("Successfully logged out");
+    localStorage.removeItem("usertype");
+    setUsertype(null);
+  }
 
   return (
     <div>
-      { !localStorage.getItem('userinfo') ? 
+      { !usertype ? 
         (
           <div style={{marginLeft: '40px', marginTop: '18px'}}>
             <Form form={form} name="horizontal_login" layout="inline" onFinish={login}>
@@ -49,9 +74,9 @@ const Authentication = () => {
           </div>
         ) : 
         (
-          <div>
-            <span>Successfully logged in As {}</span>
-            <Button type="primary">Logout</Button>
+          <div style={{marginLeft: '40px',}}>
+            <span>Successfully logged in As {usertype} </span>
+            <Button type="danger" onClick={logout}>Logout</Button>
           </div>
         )
       }

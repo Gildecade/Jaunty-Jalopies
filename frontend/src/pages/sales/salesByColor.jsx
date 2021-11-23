@@ -54,8 +54,13 @@ const SalesByColorTable = () => {
 
 
   return (
+    localStorage.getItem('usertype') === "Owner" ?
     <div>
       <Table columns={columns} dataSource={data}></Table>
+    </div>
+    :
+    <div>
+      <h1>No Access to this page. Please login as Owner.</h1>
     </div>
   );
 }

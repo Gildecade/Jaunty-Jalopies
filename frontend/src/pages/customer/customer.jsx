@@ -33,6 +33,7 @@ const Customer = () => {
   }
 
   return (
+    localStorage.getItem('usertype') ?
     <div>
       <Form
         layout='inline'
@@ -72,6 +73,10 @@ const Customer = () => {
         ) : 
         (<div></div>)
       }
+    </div>
+    :
+    <div>
+      <h1>No Access to this page. Please login.</h1>
     </div>
   );
 }
