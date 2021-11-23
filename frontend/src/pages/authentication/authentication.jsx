@@ -24,6 +24,7 @@ const Authentication = () => {
       } else {
         message.success(`Successfully logged in as ${result.data}`);
         localStorage.setItem("usertype", result.data);
+        localStorage.setItem("username", values.username);
         setUsertype(result.data);
       }
     } catch (err) {
@@ -35,6 +36,7 @@ const Authentication = () => {
   const logout = () => {
     message.success("Successfully logged out");
     localStorage.removeItem("usertype");
+    localStorage.removeItem("username");
     setUsertype(null);
   }
 
