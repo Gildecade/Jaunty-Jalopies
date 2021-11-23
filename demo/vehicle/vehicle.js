@@ -231,5 +231,63 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     }
   });
   
-
+/**
+ * view all colors in DB
+ * Input: NULL
+ * Ouput: 
+ *    all colors
+ */
+ router.post('/get_colors', async (req, res) => {
+    let sql = `SELECT * FROM Color`;
+    
+    try {
+        const pool = await database('TEST').pool();
+        const color_result = await pool.queryAsync(sql);
+        res.send(color_result);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({error: err});
+    }
+  });
+  
+/**
+ * view all manufacturers in DB
+ * Input: NULL
+ * Ouput: 
+ *    all manufacturers
+ */
+ router.post('/get_manufacturers', async (req, res) => {
+    let sql = `SELECT * FROM Manufacturer`;
+    
+    try {
+        const pool = await database('TEST').pool();
+        const manufacturer_result = await pool.queryAsync(sql);
+        res.send(manufacturer_result);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({error: err});
+    }
+  });
+  
+/**
+ * Insert manufacturer into DB
+ * Input: manufacturer
+ * Ouput: 
+ *    200 ok if no error, otherwise return 500 http code.
+ */
+ router.post('/add_manufacturer', async (req, res) => {
+    const { manufacturer } = req.body;
+    let sql = `Insert INTO Manufacturer
+    VALUES (${manufacturer})`;
+    
+    try {
+        const pool = await database('TEST').pool();
+        const add_manufacturer_result = await pool.queryAsync(sql);
+        res.send(add_manufacturer_result);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({error: err});
+    }
+  });
+  
 module.exports = router;
