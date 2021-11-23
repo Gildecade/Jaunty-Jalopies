@@ -54,7 +54,7 @@ const SalesByColorTable = () => {
 
 
   return (
-    localStorage.getItem('usertype') === "Owner" ?
+    localStorage.getItem('usertype') === "Owner" || localStorage.getItem('usertype') === "Manager" ?
     <div>
       <Table columns={columns} dataSource={data}></Table>
     </div>

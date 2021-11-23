@@ -10,9 +10,6 @@ const Customer = () => {
   const [searchByTaxNumber, setSearchByTaxNumber] = useState(false);
   const [customerData, setCustomerData] = useState(null);
 
-  useEffect(() => {
-    // TODO: authentication
-  });
 
   const [form] = Form.useForm();
 
