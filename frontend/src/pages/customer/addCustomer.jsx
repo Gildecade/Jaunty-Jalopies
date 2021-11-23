@@ -31,6 +31,7 @@ const AddCustomerForm = () => {
   }
 
   return (
+    localStorage.getItem('usertype') ?
     <div>
       <Select defaultValue="isIndividual" style={{ width: 200 }} onChange={() => setIsIndividual(!isIndividual)}>
         <Option value="isIndividual">Add Individual</Option>
@@ -77,6 +78,10 @@ const AddCustomerForm = () => {
         </Form>
       )
       }
+    </div>
+    :
+    <div>
+      <h1>No Access to this page. Please login.</h1>
     </div>
   );
 }

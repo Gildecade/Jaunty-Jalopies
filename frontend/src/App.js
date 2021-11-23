@@ -83,7 +83,7 @@ const App = () => {
               <Route path="/byColor" element={<SalesByColorTable />} />
               <Route path="/byType" element={<SalesByTypeTable />} />
               <Route path="/byManufacturer" element={<SalesByManufacturerTable />} />
-              <Route path="/vehicle/:id" element={<VehicleDetail />} />
+              <Route path="/vehicle/:id/:vehicle_type" element={<VehicleDetail />} />
               {/* TODO: Register more routes here...... */}
             </Routes>
           </div>
