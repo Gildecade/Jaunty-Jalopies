@@ -28,6 +28,7 @@ import PartsStatistics from './pages/parts/partsStatistics';
 import MonthlySales from './pages/sales/monthlySale';
 import CustomerIncomeDetail from './pages/other/customerIncomeDetail';
 import RepairReportDetail from './pages/repair/repairReportDetail';
+import MonthlySaleDetail from './pages/sales/monthlySaleDetail';
 // TODO: import more components here
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -99,6 +100,7 @@ const App = () => {
               <Route path="/monthlySales" element={<MonthlySales />} />
               <Route path="/customerIncome/:customer_id" element={<CustomerIncomeDetail />} />
               <Route path="/repairReportDetail/:manufacturer" element={<RepairReportDetail />} />
+              <Route path="/monthlySaleDetail/:year/:month" element={<MonthlySaleDetail />} />
               {/* TODO: Register more routes here...... */}
             </Routes>
           </div>

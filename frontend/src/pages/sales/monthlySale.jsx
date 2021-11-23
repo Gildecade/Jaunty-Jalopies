@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, message, Tag, Space } from 'antd';
 import { domain } from '../../config';
+import {
+  Link
+} from "react-router-dom";
 
 import axios from 'axios';
 
@@ -59,6 +62,18 @@ const MonthlySales = () => {
         dataIndex: 'price_ratio',
         key: 'price_ratio',
     },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+          <Link to={`/monthlySaleDetail/${record.year}/${record.month}`}>
+          <Space size="middle">
+            <a>View Details</a>
+          </Space>
+          </Link>
+      ),
+    },
+
   ];
 
 

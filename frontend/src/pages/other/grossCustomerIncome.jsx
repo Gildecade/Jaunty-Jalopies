@@ -88,6 +88,7 @@ const GrossCustomerIncome = () => {
     <div>
       <h1>No Access to this page. Please login as Manager or Owner.</h1>
     </div>
+    
   );
 }
 
