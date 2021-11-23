@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, message, Tag, Space } from 'antd';
 import { domain } from '../../config';
+import {
+  Link
+} from "react-router-dom";
 
 import axios from 'axios';
 
@@ -48,7 +51,7 @@ const GrossCustomerIncome = () => {
     {
       title: 'Most Recent Date',
       dataIndex: 'recent_date',
-      key: 'recnt_date',
+      key: 'recent_date',
     },
     {
         title: 'Number of Sales',
@@ -64,9 +67,11 @@ const GrossCustomerIncome = () => {
         title: 'Action',
         key: 'action',
         render: (text, record) => (
+          <Link to={`/customerIncome/${record.customer_id}`}>
           <Space size="middle">
             <a>View Details</a>
           </Space>
+          </Link>
         ),
       },
 

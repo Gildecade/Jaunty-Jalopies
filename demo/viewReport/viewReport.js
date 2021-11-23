@@ -128,7 +128,7 @@ router.post("/grossCustomerIncome/repairs", async(req, res) => {
     FROM Repair t1
     INNER JOIN User t2
     ON t1.service_writer_username = t2.username
-    WHERE t1.customer_id = 1
+    WHERE t1.customer_id = '${customer_id}'
     ORDER BY start_date DESC, end_date, VIN ASC;`;
 
     try {
