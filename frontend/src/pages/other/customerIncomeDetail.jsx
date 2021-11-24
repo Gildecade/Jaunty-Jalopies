@@ -50,7 +50,7 @@ const CustomerIncomeDetail = () => {
   
   const salesColumns = [
     {
-      title: 'Sold Date',
+      title: 'Sale Date',
       dataIndex: 'sale_date',
       key: 'sale_date',
     },
@@ -133,11 +133,11 @@ const CustomerIncomeDetail = () => {
     localStorage.getItem('usertype') ?
     <div>
         <div>
-            <h1>Customer Sales History</h1>
+            <h1>Customer Sales History (Customer_ID : {customer_id})</h1>
             <Table columns={salesColumns} dataSource={salesData}></Table>
         </div>     
         <div>
-            <h1>Customer Repair History</h1>
+            <h1>Customer Repair History (Customer_ID : {customer_id})</h1>
             <Table columns={repairColumns} dataSource={repairData}></Table>
         </div>
         <div>

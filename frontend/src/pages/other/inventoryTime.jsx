@@ -46,11 +46,13 @@ const InventoryTime = () => {
   return (
     localStorage.getItem('usertype') === "Owner" || localStorage.getItem('usertype') === "Manager" ?
     <div>
+      <h1>Average Time in Inventory</h1>
       <Table columns={columns} dataSource={data}></Table>
       
     </div>
     :
     <div>
+      <h1>Average Time in Inventory</h1>
       <h1>No Access to this page. Please login as Manager or Owner.</h1>
     </div>
   );

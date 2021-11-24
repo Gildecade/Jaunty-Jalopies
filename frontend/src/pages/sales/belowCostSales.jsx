@@ -36,6 +36,11 @@ const BelowCostSales = () => {
       key: 'VIN',
     },
     {
+      title: 'Sale Date',
+      dataIndex: 'date',
+      key: 'date',
+    },
+    {
       title: 'Invoice Price',
       dataIndex: 'invoice_price',
       key: 'invoice_price',
@@ -65,11 +70,12 @@ const BelowCostSales = () => {
   return (
     localStorage.getItem('usertype') === "Owner" || localStorage.getItem('usertype') === "Manager" ?
     <div>
+      <h1>Below Cost Sales</h1>
       <Table columns={columns} dataSource={data}></Table>
-      
     </div>
     :
     <div>
+      <h1>Below Cost Sales</h1>
       <h1>No Access to this page. Please login as Manager or Owner.</h1>
     </div>
   );

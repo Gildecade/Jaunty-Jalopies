@@ -17,14 +17,7 @@ const GrossCustomerIncome = () => {
       try {
         const result = await axios.post(`${domain}viewReport/grossCustomerIncome`, {});
         message.success("Report successfully genereted!");
-
-        let data = [];
-        let idx = 0;
-        for (const [key, value] of Object.entries(result.data)) {
-          data.push({...value, key: idx, color: key});
-          idx++;
-        }
-        setData(data);
+        setData(result.data);
       } catch(err) {
         message.error("Internal error. Please try again.");
       }
@@ -57,11 +50,13 @@ const GrossCustomerIncome = () => {
         title: 'Number of Sales',
         dataIndex: 'number_of_sales',
         key: 'number_of_sales',
+        default: 0
     },
     {
         title: 'Number of Repairs',
         dataIndex: 'number_of_repairs',
         key: 'number_of_repairs',
+        default: 0
     },
     {
         title: 'Action',
@@ -81,11 +76,13 @@ const GrossCustomerIncome = () => {
   return (
     localStorage.getItem('usertype') === "Owner" || localStorage.getItem('usertype') === "Manager" ?
     <div>
+      <h1>Gross Customer Income</h1>
       <Table columns={columns} dataSource={data}></Table>
       
     </div>
     :
     <div>
+      <h1>Gross Customer Income</h1>
       <h1>No Access to this page. Please login as Manager or Owner.</h1>
     </div>
     

@@ -76,11 +76,13 @@ const RepairReport = () => {
   return (
     localStorage.getItem('usertype') === "Owner" || localStorage.getItem('usertype') === "Manager" ?
     <div>
+      <h1>Repairs by Manufacturer</h1>
       <Table columns={columns} dataSource={data}></Table>
       
     </div>
     :
     <div>
+      <h1>Repairs by Manufacturer</h1>
       <h1>No Access to this page. Please login as Manager or Owner.</h1>
     </div>
   );
