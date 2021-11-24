@@ -20,6 +20,10 @@ import SalesByColorTable from './pages/sales/salesByColor';
 import SalesByTypeTable from './pages/sales/salesByType';
 import SalesByManufacturerTable from './pages/sales/salesByManufacturer';
 import VehicleDetail from './pages/vehicle/vehicleDetail';
+import Repair from './pages/repair/repair';
+import AddRepairForm from './pages/repair/addRepair';
+import EditRepairForm from './pages/repair/editRepair';
+import AddPartForm from './pages/repair/addPart';
 // TODO: import more components here
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -48,13 +52,13 @@ const App = () => {
             <Menu.Item key="5"><Link to="/addCustomer">Add Customer</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="repair" icon={<UserOutlined />} title="repair">
-            <Menu.Item key="6">View Repair</Menu.Item>
-            <Menu.Item key="7">Add Repair</Menu.Item>
-            <Menu.Item key="8">Edit Repair</Menu.Item>
+            <Menu.Item key="6"><Link to="/repair">View Repair</Link></Menu.Item>
+            <Menu.Item key="7"><Link to="/addRepair">Add Repair</Link></Menu.Item>
+            <Menu.Item key="8"><Link to="/editRepair">Edit Repair</Link></Menu.Item>
             <Menu.Item key="9">View Repair Report</Menu.Item>
           </SubMenu>
           <SubMenu key="parts" icon={<TeamOutlined />} title="parts">
-            <Menu.Item key="10">Add Parts</Menu.Item>
+            <Menu.Item key="10"><Link to="/addPart">Add Parts</Link></Menu.Item>
             <Menu.Item key="11">View Parts Statistics</Menu.Item>
           </SubMenu>
           <SubMenu key="sales" icon={<FileOutlined />} title="sales">
@@ -84,6 +88,10 @@ const App = () => {
               <Route path="/byType" element={<SalesByTypeTable />} />
               <Route path="/byManufacturer" element={<SalesByManufacturerTable />} />
               <Route path="/vehicle/:id/:vehicle_type" element={<VehicleDetail />} />
+              <Route path="/repair" element={<Repair />} />
+              <Route path="/addRepair" element={<AddRepairForm />} />
+              <Route path="/editRepair" element={<EditRepairForm />} />
+              <Route path="/addPart" element={<AddPartForm />} />
               {/* TODO: Register more routes here...... */}
             </Routes>
           </div>
