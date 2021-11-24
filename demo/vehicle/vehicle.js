@@ -110,15 +110,15 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         }
 
         // step 2: insert into Vehicle table and know which vehicle type
-        const { description, current_date, model_year, invoice_price, manufacturer_name, color, vehicle_type, USERNAME } = req.body;
+        const { description, current_date, model_year, model_name, invoice_price, manufacturer_name, color, vehicle_type, USERNAME } = req.body;
         sql = `INSERT INTO Vehicle 
-                    ( vin, description, added_Date, model_year, invoice_price, manufacturer, vehicle_type, inventory_clerk_username )
+                    ( vin, description, added_Date, model_year, model_name, invoice_price, manufacturer, vehicle_type, inventory_clerk_username )
                 VALUES
-                    ( ${vin}, '${description}', '${current_date}', ${model_year}, ${invoice_price}, '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
+                    ( ${vin}, '${description}', '${current_date}', ${model_year}, '${model_name}', ${invoice_price}, '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
 
         const vehicleInsert = await pool.queryAsync(sql);  
            
-        let color_list = color.split(", ");
+        let color_list = color;
         sql = `INSERT INTO VehicleColor( vin, color )
         VALUES
         `;
@@ -153,7 +153,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
                 `INSERT INTO Truck(vin, cargo_capacity, number_of_rear_axles)
                 VALUES (${vin}, ${cargo_capacity}, ${number_of_rear_axles});`;
                 break;
-            case "SUV":
+            case "suv":
                 const { number_of_cupholders, drivetrain_type } = req.body;
                 sql = `INSERT INTO Suv
                         VALUES (${vin}, ${number_of_cupholders}, '${drivetrain_type}');`;

@@ -87,9 +87,9 @@ const SearchVehicleForm = () => {
   }, []);
 
   const onFinish = async (values) => {
-    
+    console.log(values);
     try {
-      const result = await axios.post(`${domain}vehicle/search`, {...values});
+      const result = await axios.post(`${domain}vehicle/search`, {...values, USERNAME: localStorage.getItem('username')});
       if (result.data.msg) {
         message.info(result.data.msg);
       } else {
