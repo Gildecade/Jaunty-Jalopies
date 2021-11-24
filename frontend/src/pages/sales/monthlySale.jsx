@@ -60,7 +60,17 @@ const MonthlySales = () => {
     },
     {   title: 'Price Ratio',
         dataIndex: 'price_ratio',
-        key: 'price_ratio',
+        render: (text, record) => {
+          return (
+            <div
+              style={{
+                color: record.total_sales_income/(record.total_sales_income-record.total_net_income) >= 1.25  ? '#24b39b' : (record.total_sales_income/(record.total_sales_income-record.total_net_income) <= 1.1  ?'#DB4C64' : '#000'),
+              }}
+            >
+              {text}
+            </div>
+          );
+        },
     },
     {
       title: 'Action',
