@@ -56,8 +56,9 @@ const SearchVehicleForm = () => {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
+        // TODO: link to detail page
         <Space size="middle">
-          <a>View Details</a>
+          <Button type="link">View Details</Button>
         </Space>
       ),
     },

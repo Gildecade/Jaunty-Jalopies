@@ -22,7 +22,7 @@ import SalesByManufacturerTable from './pages/sales/salesByManufacturer';
 import VehicleDetail from './pages/vehicle/vehicleDetail';
 // TODO: import more components here
 import SearchVehicleForm from './pages/vehicle/search';
-import Add from './pages/vehicle/add';
+import AddVehicle from './pages/vehicle/add';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -88,7 +88,7 @@ const App = () => {
               <Route path="/vehicle/:id/:vehicle_type" element={<VehicleDetail />} />
               {/* TODO: Register more routes here...... */}
               <Route path="/vehicle/search" element={<SearchVehicleForm />} />
-              <Route path="/vehicle/add" element={<Add />} />
+              <Route path="/vehicle/add" element={<AddVehicle />} />
             </Routes>
           </div>
         </Content>
