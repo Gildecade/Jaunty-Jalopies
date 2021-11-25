@@ -55,6 +55,7 @@ const SalesByManufacturerTable = () => {
   return (
     sessionStorage.getItem('usertype') === "Owner" || sessionStorage.getItem('usertype') === "Manager" ?
     <div>
+      <h1>View Sales by Manufacturer</h1>  
       <Table columns={columns} dataSource={data}></Table>
     </div>
     :

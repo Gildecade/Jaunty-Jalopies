@@ -20,6 +20,10 @@ import SalesByColorTable from './pages/sales/salesByColor';
 import SalesByTypeTable from './pages/sales/salesByType';
 import SalesByManufacturerTable from './pages/sales/salesByManufacturer';
 import VehicleDetail from './pages/vehicle/vehicleDetail';
+import Repair from './pages/repair/repair';
+import AddRepairForm from './pages/repair/addRepair';
+import EditRepairForm from './pages/repair/editRepair';
+import AddPartForm from './pages/repair/addPart';
 import GrossCustomerIncome from './pages/other/grossCustomerIncome';
 import RepairReport from './pages/repair/repairReport';
 import BelowCostSales from './pages/sales/belowCostSales';
@@ -30,6 +34,8 @@ import CustomerIncomeDetail from './pages/other/customerIncomeDetail';
 import RepairReportDetail from './pages/repair/repairReportDetail';
 import MonthlySaleDetail from './pages/sales/monthlySaleDetail';
 // TODO: import more components here
+import SearchVehicleForm from './pages/vehicle/search';
+import AddVehicle from './pages/vehicle/add';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -48,8 +54,8 @@ const App = () => {
         <p style={{height: '32px', margin: '16px', color: 'white', fontSize: '24px'}}>Jaunty Jalopies</p>
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
           <SubMenu key="vehicle" icon={<PieChartOutlined />} title="vehicle">
-            {/* <Menu.Item key="1">Search Vehicle</Menu.Item>  */}
-            <Menu.Item key="2">Add Vehicle</Menu.Item>
+            <Menu.Item key="1"><Link to="/vehicle/search">Search Vehicle</Link></Menu.Item>
+            <Menu.Item key="2"><Link to="/vehicle/add">Add Vehicle</Link></Menu.Item>
             <Menu.Item key="3">Sell Vehicle</Menu.Item>
           </SubMenu>
           <SubMenu key="customer" icon={<DesktopOutlined />} title="customer">
@@ -57,13 +63,13 @@ const App = () => {
             <Menu.Item key="5"><Link to="/addCustomer">Add Customer</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="repair" icon={<UserOutlined />} title="repair">
-            <Menu.Item key="6">View Repair</Menu.Item>
-            <Menu.Item key="7">Add Repair</Menu.Item>
-            <Menu.Item key="8">Edit Repair</Menu.Item>
+            <Menu.Item key="6"><Link to="/repair">View Repair</Link></Menu.Item>
+            <Menu.Item key="7"><Link to="/addRepair">Add Repair</Link></Menu.Item>
+            <Menu.Item key="8"><Link to="/editRepair">Edit Repair</Link></Menu.Item>
             <Menu.Item key="9"><Link to="/repairReport">View Repair Report</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="parts" icon={<TeamOutlined />} title="parts">
-            <Menu.Item key="10">Add Parts</Menu.Item>
+            <Menu.Item key="10"><Link to="/addPart">Add Parts</Link></Menu.Item>
             <Menu.Item key="11"><Link to="/partsStatistics">View Parts Statistics</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="sales" icon={<FileOutlined />} title="sales">
@@ -101,6 +107,12 @@ const App = () => {
               <Route path="/customerIncome/:customer_id" element={<CustomerIncomeDetail />} />
               <Route path="/repairReportDetail/:manufacturer" element={<RepairReportDetail />} />
               <Route path="/monthlySaleDetail/:year/:month" element={<MonthlySaleDetail />} />
+              <Route path="/repair" element={<Repair />} />
+              <Route path="/addRepair" element={<AddRepairForm />} />
+              <Route path="/editRepair" element={<EditRepairForm />} />
+              <Route path="/addPart" element={<AddPartForm />} />
+              <Route path="/vehicle/search" element={<SearchVehicleForm />} />
+              <Route path="/vehicle/add" element={<AddVehicle />} />
               {/* TODO: Register more routes here...... */}
             </Routes>
           </div>
