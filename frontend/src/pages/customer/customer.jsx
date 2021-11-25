@@ -30,7 +30,7 @@ const Customer = () => {
   }
 
   return (
-    localStorage.getItem('usertype') ?
+    sessionStorage.getItem('usertype') ?
     <div>
       <Form
         layout='inline'
