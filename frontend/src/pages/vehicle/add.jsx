@@ -68,19 +68,19 @@ const AddVehicle = () => {
   const onFinish = async (values) => {
     let condition = {};
     if (isCar) {
-      condition = {...values, vehicle_type: "car", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "car", USERNAME: sessionStorage.getItem('username')};
     } 
     else if (isConvertible) {
-      condition = {...values, vehicle_type: "convertible", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "convertible", USERNAME: sessionStorage.getItem('username')};
     } 
     else if (isTruck) {
-      condition = {...values, vehicle_type: "truck", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "truck", USERNAME: sessionStorage.getItem('username')};
     } 
     else if (isSUV) {
-      condition = {...values, vehicle_type: "suv", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "suv", USERNAME: sessionStorage.getItem('username')};
     } 
     else {
-      condition = {...values, vehicle_type: "vanMinivan", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "vanMinivan", USERNAME: sessionStorage.getItem('username')};
     }
     console.log(condition);
 
@@ -99,7 +99,7 @@ const AddVehicle = () => {
   }
 
   return (
-    localStorage.getItem('usertype') ?
+    sessionStorage.getItem('usertype') ?
     <div>
       <Select placeholder="Select a option and change input text above" onChange={onChange}>
         <Option value="car">Car</Option>

@@ -6,7 +6,7 @@ import { domain } from '../../config';
 const AddPartForm = () => {
     const [inputDate, setInputDate] = useState('');
 
-    let user_type = localStorage.getItem('usertype');
+    let user_type = sessionStorage.getItem('usertype');
     let permission = user_type && (user_type === "Owner" || user_type === "Service Writer");
     let constraint = new RegExp(/^[1-9]\d*$/, "g");
     let notification = 'Please enter number'

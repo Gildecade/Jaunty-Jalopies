@@ -90,7 +90,7 @@ const SearchVehicleForm = () => {
   const onFinish = async (values) => {
     console.log(values);
     try {
-      const result = await axios.post(`${domain}vehicle/search`, {...values, USERNAME: localStorage.getItem('username')});
+      const result = await axios.post(`${domain}vehicle/search`, {...values, USERNAME: sessionStorage.getItem('username')});
       if (result.data.msg) {
         message.info(result.data.msg);
       } else {
@@ -107,7 +107,7 @@ const SearchVehicleForm = () => {
     
     <div>
       <Form form={form} onFinish={onFinish} labelCol={{ span: 4, }} wrapperCol={{ span: 8, }}>
-        { localStorage.getItem('usertype') ? 
+        { sessionStorage.getItem('usertype') ? 
           ( 
             <Form.Item label="VIN" name="vin" rules={[{required: false}]}><Input /></Form.Item>
           ) : 
