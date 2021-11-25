@@ -71,7 +71,7 @@ const BelowCostSales = () => {
 
 
   return (
-    localStorage.getItem('usertype') === "Owner" || localStorage.getItem('usertype') === "Manager" ?
+    sessionStorage.getItem('usertype') === "Owner" || sessionStorage.getItem('usertype') === "Manager" ?
     <div>
       <h1>Below Cost Sales</h1>
       <Table columns={columns} dataSource={data}></Table>

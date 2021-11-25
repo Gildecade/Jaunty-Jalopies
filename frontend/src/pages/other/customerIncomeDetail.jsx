@@ -41,8 +41,8 @@ const CustomerIncomeDetail = () => {
       }
     ;
 
-    if (localStorage.getItem('usertype')) {
-    //   console.log(localStorage.getItem('usertype'));
+    if (sessionStorage.getItem('usertype')) {
+    //   console.log(sessionStorage.getItem('usertype'));
       fetchSalesData();
       fetchRepairData();
     console.log("id", customer_id);
@@ -140,7 +140,7 @@ const CustomerIncomeDetail = () => {
   ];
 
   return ( 
-    localStorage.getItem('usertype') ?
+    sessionStorage.getItem('usertype') ?
     <div>
         <div>
             <h1>Customer Sales History (Customer_ID : {customer_id})</h1>

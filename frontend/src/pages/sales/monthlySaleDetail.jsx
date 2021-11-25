@@ -26,7 +26,7 @@ const MonthlySaleDetail = () => {
       }
     };
 
-    if (localStorage.getItem('usertype')) {
+    if (sessionStorage.getItem('usertype')) {
       fetchData();
     }
   }, []);
@@ -34,7 +34,7 @@ const MonthlySaleDetail = () => {
 
 
   return ( 
-    localStorage.getItem('usertype') ?
+    sessionStorage.getItem('usertype') ?
     <div>
         { data && data.length > 0 ?
         (

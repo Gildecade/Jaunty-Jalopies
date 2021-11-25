@@ -86,7 +86,7 @@ const GrossCustomerIncome = () => {
 
 
   return (
-    localStorage.getItem('usertype') === "Owner" || localStorage.getItem('usertype') === "Manager" ?
+    sessionStorage.getItem('usertype') === "Owner" || sessionStorage.getItem('usertype') === "Manager" ?
     <div>
       <h1>Gross Customer Income</h1>
       <Table columns={columns} dataSource={data}></Table>

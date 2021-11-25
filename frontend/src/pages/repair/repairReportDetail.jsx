@@ -40,8 +40,8 @@ const RepairReportDetail = () => {
       }
     ;
 
-    if (localStorage.getItem('usertype')) {
-    //   console.log(localStorage.getItem('usertype'));
+    if (sessionStorage.getItem('usertype')) {
+    //   console.log(sessionStorage.getItem('usertype'));
       fetchTypeData();
       fetchModelData();
     }
@@ -109,7 +109,7 @@ const RepairReportDetail = () => {
   ];
 
   return ( 
-    localStorage.getItem('usertype') ?
+    sessionStorage.getItem('usertype') ?
     <div>
         <div>
             <h1>Repair History by Vehicle Type</h1>
