@@ -12,7 +12,7 @@ const Authentication = () => {
   const [usertype, setUsertype] = useState(null);
 
   useEffect(() => {
-    const usertype = localStorage.getItem('usertype');
+    const usertype = sessionStorage.getItem('usertype');
     setUsertype(usertype);
   }, []);
 
@@ -23,8 +23,8 @@ const Authentication = () => {
         message.error("Wrong username or password. Please check agian.");
       } else {
         message.success(`Successfully logged in as ${result.data}`);
-        localStorage.setItem("usertype", result.data);
-        localStorage.setItem("username", values.username);
+        sessionStorage.setItem("usertype", result.data);
+        sessionStorage.setItem("username", values.username);
         setUsertype(result.data);
       }
     } catch (err) {
@@ -35,8 +35,8 @@ const Authentication = () => {
 
   const logout = () => {
     message.success("Successfully logged out");
-    localStorage.removeItem("usertype");
-    localStorage.removeItem("username");
+    sessionStorage.removeItem("usertype");
+    sessionStorage.removeItem("username");
     setUsertype(null);
   }
 
