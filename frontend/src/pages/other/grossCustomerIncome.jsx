@@ -50,13 +50,18 @@ const GrossCustomerIncome = () => {
         title: 'Number of Sales',
         dataIndex: 'number_of_sales',
         key: 'number_of_sales',
-        default: 0
+        render: (text)=>{
+          return text||0;
+        }
+
     },
     {
         title: 'Number of Repairs',
         dataIndex: 'number_of_repairs',
         key: 'number_of_repairs',
-        default: 0
+        render: (text)=>{
+          return text||0;
+        }
     },
     {
         title: 'Action',

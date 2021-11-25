@@ -47,16 +47,25 @@ const RepairReport = () => {
       title: 'Parts Cost',
       dataIndex: 'sum_parts_cost',
       key: 'sum_parts_cost',
+      render: (text)=>{
+        return text||0;
+      }
     },
     {
       title: 'Labor Cost',
       dataIndex: 'sum_labor_cost',
       key: 'sum_labor_cost',
+      render: (text)=>{
+        return text||0;
+      }
     },
     {
         title: 'Total Repair Cost',
         dataIndex: 'sum_repair_cost',
         key: 'sum_repair_cost',
+        render: (text)=>{
+          return text||0;
+        }
     },
     {
         title: 'Action',

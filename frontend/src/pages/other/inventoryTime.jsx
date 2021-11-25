@@ -39,6 +39,9 @@ const InventoryTime = () => {
       title: 'Average Time in Inventory',
       dataIndex: 'average_time',
       key: 'average_time',
+      render: (text)=>{
+        return text||'N/A';
+      }
     },
   ];
 
