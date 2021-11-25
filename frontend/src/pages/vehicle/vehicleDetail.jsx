@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Select, message, Descriptions } from 'antd';
+import { message, Descriptions } from 'antd';
 import { domain } from '../../config';
 import { useParams } from 'react-router-dom';
 
@@ -36,6 +36,7 @@ const VehicleDetail = () => {
   return ( 
     sessionStorage.getItem('usertype') ?
     <div>
+      <h1>View Vehicle Detail</h1>
       { data.saleData && data.saleData.length > 0 ?
         (
           <Descriptions title="Vehicle Sale Information" bordered>

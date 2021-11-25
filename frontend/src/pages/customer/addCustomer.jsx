@@ -33,6 +33,7 @@ const AddCustomerForm = () => {
   return (
     sessionStorage.getItem('usertype') ?
     <div>
+      <h1>Add Customer</h1>  
       <Select defaultValue="isIndividual" style={{ width: 200 }} onChange={() => setIsIndividual(!isIndividual)}>
         <Option value="isIndividual">Add Individual</Option>
         <Option value="isBusiness">Add Business</Option>
