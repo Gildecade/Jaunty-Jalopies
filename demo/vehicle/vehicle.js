@@ -22,7 +22,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
             WHERE
                 1 = 1 `;
 
-    let sql_vin = (USERNAME && vin) ? `AND v.vin = ${vin} ` : "";
+    let sql_vin = (USERNAME && vin) ? `AND v.vin = '${vin}' ` : "";
     let sql_vehicle_type = vehicle_type ? `AND v.vehicle_type = '${vehicle_type}' `: "";
     let sql_color = color ? `AND vc.color = '${color}' `: "";
     let sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
@@ -97,7 +97,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     // step 1: search vin in vehicle table to check if exists
     let sql = `SELECT vin 
                 FROM Vehicle
-                WHERE vin = ${vin}`;
+                WHERE vin = '${vin}'`;
   
     try {
         const pool = await database('TEST').pool();
@@ -114,7 +114,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         sql = `INSERT INTO Vehicle 
                     ( vin, description, added_Date, model_year, model_name, invoice_price, manufacturer, vehicle_type, inventory_clerk_username )
                 VALUES
-                    ( ${vin}, '${description}', '${current_date}', ${model_year}, '${model_name}', ${invoice_price}, '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
+                    ( '${vin}', '${description}', '${current_date}', ${model_year}, '${model_name}', ${invoice_price}, '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
 
         const vehicleInsert = await pool.queryAsync(sql);  
            
@@ -126,10 +126,10 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         for (let i = 0; i < color_list.length; ++i) {
             // last line no comma
             if (i == color_list.length - 1) {
-                sql += `( ${vin}, '${color_list[i]}' );`;
+                sql += `( '${vin}', '${color_list[i]}' );`;
             }
             else {
-                sql += `( ${vin}, '${color_list[i]}' ),`;
+                sql += `( '${vin}', '${color_list[i]}' ),`;
             }
         }
         const colorInsert = await pool.queryAsync(sql);
@@ -139,29 +139,29 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
             case "car":
                 const { number_of_doors } = req.body;
                 sql = `INSERT INTO Car
-                        VALUES (${vin}, ${number_of_doors});`;
+                        VALUES ('${vin}', ${number_of_doors});`;
                 break;
             case "convertible":
                 const { roof_type, back_seat_count } = req.body;
                 sql = `INSERT INTO Convertible
-                        VALUES (${vin}, '${roof_type}', ${back_seat_count});`;
+                        VALUES ('${vin}', '${roof_type}', ${back_seat_count});`;
                 break;
             case "truck":
                 const { cargo_capacity, cargo_cover_type, number_of_rear_axles } = req.body;
                 sql = cargo_cover_type? `INSERT INTO Truck
-                VALUES (${vin}, ${cargo_capacity}, ${cargo_cover_type}, ${number_of_rear_axles});`: 
+                VALUES ('${vin}', ${cargo_capacity}, ${cargo_cover_type}, ${number_of_rear_axles});`: 
                 `INSERT INTO Truck(vin, cargo_capacity, number_of_rear_axles)
-                VALUES (${vin}, ${cargo_capacity}, ${number_of_rear_axles});`;
+                VALUES ('${vin}', ${cargo_capacity}, ${number_of_rear_axles});`;
                 break;
             case "suv":
                 const { number_of_cupholders, drivetrain_type } = req.body;
                 sql = `INSERT INTO Suv
-                        VALUES (${vin}, ${number_of_cupholders}, '${drivetrain_type}');`;
+                        VALUES ('${vin}', ${number_of_cupholders}, '${drivetrain_type}');`;
                 break;
             default:
                 const { has_drivers_side_back_door } = req.body;
                 sql = `INSERT INTO VanMinivan
-                        VALUES (${vin}, ${has_drivers_side_back_door});`;
+                        VALUES ('${vin}', ${has_drivers_side_back_door});`;
                 break;
         }
         
@@ -208,7 +208,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
       res.status(400).send({msg: 'Bad parameter'});
       return;
     }
-    let sql = `SELECT * FROM ${type} WHERE vin = ${vin}`;
+    let sql = `SELECT * FROM ${type} WHERE vin = '${vin}'`;
     
     try {
       const pool = await database('TEST').pool();
@@ -217,10 +217,10 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
       if (!usertype || usertype == 'Inventory Clerks' || usertype == 'Salespeople' || usertype == 'Service Writer') {
         res.send({ vehicleTypeData });
       } else {  // if usertype is Manager or Owner, we still need to find information about Sales and Repair
-        sql = `SELECT * FROM Sale WHERE vin = ${vin}`;
+        sql = `SELECT * FROM Sale WHERE vin = '${vin}'`;
         const saleData = await pool.queryAsync(sql);
   
-        sql = `SELECT * FROM Repair WHERE vin = ${vin}`;
+        sql = `SELECT * FROM Repair WHERE vin = '${vin}'`;
         const repairData = await pool.queryAsync(sql);
   
         res.send({ vehicleTypeData, saleData, repairData });
@@ -289,5 +289,78 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
       res.status(500).send({error: err});
     }
   });
+
+
+  /**
+ * Sell vehicles and insert sale records into DB
+ * Input: manufacturer
+ * Ouput: 
+ *    200 ok if no error, otherwise return 500 http code.
+ */
+ router.post('/sell', async (req, res) => {
+  const { vin } = req.body;
+  let sql = `Select vin 
+  From Sale
+  WHERE vin = '${vin}'`;
   
+  try {
+      const pool = await database('TEST').pool();
+      const vin_result = await pool.queryAsync(sql);
+
+      if (vin_result.length != 0) {
+        res.send({'msg': "Sorry, it has already been sold!"});
+        return;
+      }
+      const { USERNAME, customer_id, current_date, sold_price } = req.body;
+      sql = `INSERT INTO Sale (vin, salespeople_username, customer_id, purchase_date, sold_price)
+      VALUES ('${vin}', '${USERNAME}', ${customer_id}, '${current_date}', ${sold_price})`;
+      const sale_result = await pool.queryAsync(sql);
+      res.send(sale_result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({error: err});
+  }
+});
+
+/**
+ * get vehicle invoice_price to initialize sell vehicle
+ * Input: vin
+ * Ouput: invoice_price
+ */
+ router.post('/get_price', async (req, res) => {
+
+  const { vin } = req.body;
+  let sql = `SELECT invoice_price 
+  From Vehicle
+  WHERE vin = '${vin}'`;
+  
+  try {
+      const pool = await database('TEST').pool();
+      const price_result = await pool.queryAsync(sql);
+      res.send(price_result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({error: err});
+  }
+});
+
+/**
+ * view all customers ID in DB
+ * Input: NULL
+ * Ouput: 
+ *    all customers ID
+ */
+ router.post('/get_customers', async (req, res) => {
+  let sql = `SELECT id FROM Customer`;
+  
+  try {
+      const pool = await database('TEST').pool();
+      const customer_result = await pool.queryAsync(sql);
+      res.send(customer_result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({error: err});
+  }
+});
+
 module.exports = router;

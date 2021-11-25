@@ -27,6 +27,7 @@ import AddPartForm from './pages/repair/addPart';
 // TODO: import more components here
 import SearchVehicleForm from './pages/vehicle/search';
 import AddVehicle from './pages/vehicle/add';
+import SellVehicleForm from './pages/vehicle/sell';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -47,7 +48,7 @@ const App = () => {
           <SubMenu key="vehicle" icon={<PieChartOutlined />} title="vehicle">
             <Menu.Item key="1"><Link to="/vehicle/search">Search Vehicle</Link></Menu.Item>
             <Menu.Item key="2"><Link to="/vehicle/add">Add Vehicle</Link></Menu.Item>
-            <Menu.Item key="3">Sell Vehicle</Menu.Item>
+            <Menu.Item key="3"><Link to="/vehicle/sell"></Link>Sell Vehicle</Menu.Item>
           </SubMenu>
           <SubMenu key="customer" icon={<DesktopOutlined />} title="customer">
             <Menu.Item key="4"><Link to="/customer">Lookup Customer</Link></Menu.Item>
@@ -97,6 +98,7 @@ const App = () => {
               {/* TODO: Register more routes here...... */}
               <Route path="/vehicle/search" element={<SearchVehicleForm />} />
               <Route path="/vehicle/add" element={<AddVehicle />} />
+              <Route path="/vehicle/sell" element={<SellVehicleForm />} />
             </Routes>
           </div>
         </Content>
