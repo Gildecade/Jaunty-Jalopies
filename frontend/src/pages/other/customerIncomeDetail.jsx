@@ -3,6 +3,7 @@ import { Form, Input, Button, Select, message,  Table } from 'antd';
 import { domain } from '../../config';
 import { useParams } from 'react-router-dom';
 
+import moment from 'moment';
 import axios from 'axios';
 
 
@@ -53,6 +54,9 @@ const CustomerIncomeDetail = () => {
       title: 'Sale Date',
       dataIndex: 'sale_date',
       key: 'sale_date',
+      render: (text)=>{
+        return moment(text).format('YYYY-MM-DD');
+      },
     },
     {
       title: 'Sold Price',
@@ -91,11 +95,17 @@ const CustomerIncomeDetail = () => {
       title: 'Start Date',
       dataIndex: 'start_date',
       key: 'start_date',
+      render: (text)=>{
+        return moment(text).format('YYYY-MM-DD');
+      },
     },
     {
       title: 'End Date',
       dataIndex: 'end_date',
       key: 'end_date',
+      render: (text)=>{
+        return text?moment(text).format('YYYY-MM-DD'):'N/A';
+      },
     },
     {
       title: 'VIN',

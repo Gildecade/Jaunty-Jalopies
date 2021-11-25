@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, message, Tag, Space } from 'antd';
 import { domain } from '../../config';
-
+import moment from 'moment';
 import axios from 'axios';
 
 
@@ -39,6 +39,9 @@ const BelowCostSales = () => {
       title: 'Sale Date',
       dataIndex: 'date',
       key: 'date',
+      render: (text)=>{
+        return moment(text).format('YYYY-MM-DD');
+      },
     },
     {
       title: 'Invoice Price',

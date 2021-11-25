@@ -5,6 +5,7 @@ import {
   Link
 } from "react-router-dom";
 
+import moment from 'moment';
 import axios from 'axios';
 
 
@@ -40,11 +41,17 @@ const GrossCustomerIncome = () => {
       title: 'First Date',
       dataIndex: 'first_date',
       key: 'first_date',
+      render: (text)=>{
+        return moment(text).format('YYYY-MM-DD');
+      },
     },
     {
       title: 'Most Recent Date',
       dataIndex: 'recent_date',
       key: 'recent_date',
+      render: (text)=>{
+        return moment(text).format('YYYY-MM-DD');
+      },
     },
     {
         title: 'Number of Sales',

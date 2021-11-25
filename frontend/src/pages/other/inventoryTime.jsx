@@ -36,7 +36,7 @@ const InventoryTime = () => {
       key: 'vehicle_type',
     },
     {
-      title: 'Average Time in Inventory',
+      title: 'Average Time in Inventory (Days)',
       dataIndex: 'average_time',
       key: 'average_time',
       render: (text)=>{
