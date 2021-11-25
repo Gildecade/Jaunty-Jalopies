@@ -28,7 +28,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     let sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
     let sql_model_year = model_year ? `AND v.model_year = ${model_year} `: "";
     let sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} ${list_price} `: "";
-    let sql_key_word = key_word ? `AND v.description LIKE "%'${key_word}'%" `: "";
+    let sql_key_word = key_word ? `AND v.description LIKE "%${key_word}%" `: "";
 
     let sql_tail =     `AND v.vin NOT IN 
                     ( SELECT vin 
@@ -110,15 +110,15 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         }
 
         // step 2: insert into Vehicle table and know which vehicle type
-        const { description, current_date, model_year, invoice_price, manufacturer_name, color, vehicle_type, USERNAME } = req.body;
+        const { description, current_date, model_year, model_name, invoice_price, manufacturer_name, color, vehicle_type, USERNAME } = req.body;
         sql = `INSERT INTO Vehicle 
-                    ( vin, description, added_Date, model_year, invoice_price, manufacturer, vehicle_type, inventory_clerk_username )
+                    ( vin, description, added_Date, model_year, model_name, invoice_price, manufacturer, vehicle_type, inventory_clerk_username )
                 VALUES
-                    ( ${vin}, '${description}', '${current_date}', ${model_year}, ${invoice_price}, '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
+                    ( ${vin}, '${description}', '${current_date}', ${model_year}, '${model_name}', ${invoice_price}, '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );\n`;
 
         const vehicleInsert = await pool.queryAsync(sql);  
            
-        let color_list = color.split(", ");
+        let color_list = color;
         sql = `INSERT INTO VehicleColor( vin, color )
         VALUES
         `;
@@ -153,7 +153,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
                 `INSERT INTO Truck(vin, cargo_capacity, number_of_rear_axles)
                 VALUES (${vin}, ${cargo_capacity}, ${number_of_rear_axles});`;
                 break;
-            case "SUV":
+            case "suv":
                 const { number_of_cupholders, drivetrain_type } = req.body;
                 sql = `INSERT INTO Suv
                         VALUES (${vin}, ${number_of_cupholders}, '${drivetrain_type}');`;
@@ -231,5 +231,63 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     }
   });
   
-
+/**
+ * view all colors in DB
+ * Input: NULL
+ * Ouput: 
+ *    all colors
+ */
+ router.post('/get_colors', async (req, res) => {
+    let sql = `SELECT * FROM Color`;
+    
+    try {
+        const pool = await database('TEST').pool();
+        const color_result = await pool.queryAsync(sql);
+        res.send(color_result);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({error: err});
+    }
+  });
+  
+/**
+ * view all manufacturers in DB
+ * Input: NULL
+ * Ouput: 
+ *    all manufacturers
+ */
+ router.post('/get_manufacturers', async (req, res) => {
+    let sql = `SELECT * FROM Manufacturer`;
+    
+    try {
+        const pool = await database('TEST').pool();
+        const manufacturer_result = await pool.queryAsync(sql);
+        res.send(manufacturer_result);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({error: err});
+    }
+  });
+  
+/**
+ * Insert manufacturer into DB
+ * Input: manufacturer
+ * Ouput: 
+ *    200 ok if no error, otherwise return 500 http code.
+ */
+ router.post('/add_manufacturer', async (req, res) => {
+    const { manufacturer } = req.body;
+    let sql = `Insert INTO Manufacturer
+    VALUES (${manufacturer})`;
+    
+    try {
+        const pool = await database('TEST').pool();
+        const add_manufacturer_result = await pool.queryAsync(sql);
+        res.send(add_manufacturer_result);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({error: err});
+    }
+  });
+  
 module.exports = router;

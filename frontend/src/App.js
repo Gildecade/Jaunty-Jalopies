@@ -21,6 +21,8 @@ import SalesByTypeTable from './pages/sales/salesByType';
 import SalesByManufacturerTable from './pages/sales/salesByManufacturer';
 import VehicleDetail from './pages/vehicle/vehicleDetail';
 // TODO: import more components here
+import SearchVehicleForm from './pages/vehicle/search';
+import AddVehicle from './pages/vehicle/add';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -39,8 +41,8 @@ const App = () => {
         <p style={{height: '32px', margin: '16px', color: 'white', fontSize: '24px'}}>Jaunty Jalopies</p>
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
           <SubMenu key="vehicle" icon={<PieChartOutlined />} title="vehicle">
-            {/* <Menu.Item key="1">Search Vehicle</Menu.Item>  */}
-            <Menu.Item key="2">Add Vehicle</Menu.Item>
+            <Menu.Item key="1"><Link to="/vehicle/search">Search Vehicle</Link></Menu.Item>
+            <Menu.Item key="2"><Link to="/vehicle/add">Add Vehicle</Link></Menu.Item>
             <Menu.Item key="3">Sell Vehicle</Menu.Item>
           </SubMenu>
           <SubMenu key="customer" icon={<DesktopOutlined />} title="customer">
@@ -85,6 +87,8 @@ const App = () => {
               <Route path="/byManufacturer" element={<SalesByManufacturerTable />} />
               <Route path="/vehicle/:id/:vehicle_type" element={<VehicleDetail />} />
               {/* TODO: Register more routes here...... */}
+              <Route path="/vehicle/search" element={<SearchVehicleForm />} />
+              <Route path="/vehicle/add" element={<AddVehicle />} />
             </Routes>
           </div>
         </Content>
