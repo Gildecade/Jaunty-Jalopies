@@ -5,9 +5,7 @@ import { domain } from '../../config';
 
 const { Option } = Select;
 
-const Add = () => {
-
-  const [result, setResult] = useState(null);
+const AddVehicle = () => {
   const [isCar, setIsCar] = useState(true);
   const [isConvertible, setIsConvertible] = useState(false);
   const [isTruck, setIsTruck] = useState(false);
@@ -92,11 +90,11 @@ const Add = () => {
         message.warn(result.data.msg);
       } else {
         message.success("Successfully added vehicle.");
-        setResult(result.data);
         console.log(result);
       }
     } catch(err) {
       message.error("Add Vehicle failed. Please try again.");
+      console.log(err);
     }
   }
 
@@ -277,4 +275,4 @@ const Add = () => {
   );
 }
 
-export default Add;
+export default AddVehicle;
