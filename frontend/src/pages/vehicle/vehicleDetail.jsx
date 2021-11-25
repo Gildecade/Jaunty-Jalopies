@@ -17,7 +17,7 @@ const VehicleDetail = () => {
         const result = await axios.post(`${domain}vehicle/view`, {
           vin: id,
           vehicle_type: vehicle_type,
-          usertype: localStorage.getItem('usertype')
+          usertype: sessionStorage.getItem('usertype')
         });
         console.log(result);
         setData(result.data);
@@ -27,14 +27,14 @@ const VehicleDetail = () => {
       }
     };
 
-    if (localStorage.getItem('usertype')) {
-      console.log(localStorage.getItem('usertype'));
+    if (sessionStorage.getItem('usertype')) {
+      console.log(sessionStorage.getItem('usertype'));
       viewDetail();
     }
   }, []);
   
   return ( 
-    localStorage.getItem('usertype') ?
+    sessionStorage.getItem('usertype') ?
     <div>
       { data.saleData && data.saleData.length > 0 ?
         (
