@@ -50,7 +50,7 @@ CREATE TABLE Vehicle (
 	added_date Date NOT NULL,
 	inventory_clerk_username Varchar(128) NOT NULL,
 	manufacturer varchar(128) NOT NULL,
-	vehicle_type ENUM("car", "convertible", "trunk", "vanMinivan", "suv"),
+	vehicle_type ENUM("car", "convertible", "truck", "vanMinivan", "suv"),
 	PRIMARY KEY (vin),
   FOREIGN KEY (manufacturer) REFERENCES Manufacturer(name),
 	FOREIGN KEY (Inventory_clerk_username) REFERENCES InventoryClerk(username)

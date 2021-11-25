@@ -22,6 +22,8 @@ inputs:
         value: xiayu130828
       - key: DB_TEST_DATABASE
         value: test
+      - key: DB_TEST_CONNECTION_LIMIT
+        value: 100
     vpc: # 私有网络配置
       vpcId: 'vpc-4tceuyj1' # 私有网络的Id
       subnetId: 'subnet-nz8reri4' # 子网ID
