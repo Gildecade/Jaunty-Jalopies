@@ -32,6 +32,7 @@ const Customer = () => {
   return (
     sessionStorage.getItem('usertype') ?
     <div>
+      <h1>Lookup Customer</h1>  
       <Form
         layout='inline'
         form={form}
