@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Form, Input, Button, Select, message, Space, InputNumber } from 'antd';
 import { domain } from '../../config';
+import {
+  Link
+} from "react-router-dom";
 
 import axios from 'axios';
 
@@ -56,10 +59,9 @@ const SearchVehicleForm = () => {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
-        // TODO: link to detail page
-        <Space size="middle">
+        <Link to={`/vehicle/${record.vin}/${record.vehicle_type}`}>
           <Button type="link">View Details</Button>
-        </Space>
+        </Link>
       ),
     },
   ];
@@ -95,7 +97,10 @@ const SearchVehicleForm = () => {
         message.info(result.data.msg);
       } else {
         message.success("Successfully found vehicle.");
-        setResult(result.data);
+        const data = result.data.map(f => {
+          return {...f, key: f.vin};
+        })
+        setResult(data);
       }
       
     } catch(err) {
