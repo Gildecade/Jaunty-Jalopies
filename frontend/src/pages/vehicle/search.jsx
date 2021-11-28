@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Form, Input, Button, Select, message, Space } from 'antd';
+import { Table, Form, Input, Button, Select, message, Space, InputNumber } from 'antd';
 import { domain } from '../../config';
 
 import axios from 'axios';
@@ -136,7 +136,7 @@ const SearchVehicleForm = () => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Model Year" name="model_year" rules={[{required: false}]}><Input /></Form.Item>
+        <Form.Item label="Model Year" name="model_year" rules={[{required: false}]}><InputNumber min={100} max={2022} /></Form.Item>
         <Form.Item label="Price" name="list_price" rules={[{required: false}]}><Input addonBefore={prefixSelector} style={{ width: '100%' }} /></Form.Item>
         <Form.Item label="Key Word" name="key_word" rules={[{required: false}]}><Input /></Form.Item>
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>
