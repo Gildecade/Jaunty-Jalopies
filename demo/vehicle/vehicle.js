@@ -195,42 +195,108 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
  *    if usertype == 'Owner':
  *      same as 'Manager'
  */
- router.post('/view', async (req, res) => {
-    const { vin, vehicle_type, usertype } = req.body;
+//  router.post('/view', async (req, res) => {
+//     const { vin, vehicle_type, usertype } = req.body;
   
-    let type;
-    if (vehicle_type == 'car') type = 'Car';
-    else if (vehicle_type == 'convertible') type = 'Convertible';
-    else if (vehicle_type == 'suv') type = 'Suv';
-    else if (vehicle_type == 'truck') type = 'Truck';
-    else if (vehicle_type == 'vanMinivan') type = 'VanMinivan';
-    else {
-      res.status(400).send({msg: 'Bad parameter'});
-      return;
-    }
-    let sql = `SELECT * FROM ${type} WHERE vin = '${vin}'`;
+//     let type;
+//     if (vehicle_type == 'car') type = 'Car';
+//     else if (vehicle_type == 'convertible') type = 'Convertible';
+//     else if (vehicle_type == 'suv') type = 'Suv';
+//     else if (vehicle_type == 'truck') type = 'Truck';
+//     else if (vehicle_type == 'vanMinivan') type = 'VanMinivan';
+//     else {
+//       res.status(400).send({msg: 'Bad parameter'});
+//       return;
+//     }
+//     let sql = `SELECT * FROM ${type} WHERE vin = '${vin}'`;
     
-    try {
-      const pool = await database('TEST').pool();
-      const vehicleTypeData = await pool.queryAsync(sql);
+//     try {
+//       const pool = await database('TEST').pool();
+//       const vehicleTypeData = await pool.queryAsync(sql);
   
-      if (!usertype || usertype == 'Inventory Clerks' || usertype == 'Salespeople' || usertype == 'Service Writer') {
-        res.send({ vehicleTypeData });
-      } else {  // if usertype is Manager or Owner, we still need to find information about Sales and Repair
-        sql = `SELECT * FROM Sale WHERE vin = '${vin}'`;
-        const saleData = await pool.queryAsync(sql);
+//       if (!usertype || usertype == 'Inventory Clerks' || usertype == 'Salespeople' || usertype == 'Service Writer') {
+//         res.send({ vehicleTypeData });
+//       } else {  // if usertype is Manager or Owner, we still need to find information about Sales and Repair
+//         sql = `SELECT * FROM Sale WHERE vin = '${vin}'`;
+//         const saleData = await pool.queryAsync(sql);
   
-        sql = `SELECT * FROM Repair WHERE vin = '${vin}'`;
-        const repairData = await pool.queryAsync(sql);
+//         sql = `SELECT * FROM Repair WHERE vin = '${vin}'`;
+//         const repairData = await pool.queryAsync(sql);
   
-        res.send({ vehicleTypeData, saleData, repairData });
-      }
-    } catch (err) {
-      console.log(err);
-      res.status(500).send({error: err});
-    }
-  });
+//         res.send({ vehicleTypeData, saleData, repairData });
+//       }
+//     } catch (err) {
+//       console.log(err);
+//       res.status(500).send({error: err});
+//     }
+//   });
+
   
+/**
+ * Get Vehicle by vin
+ */
+router.post('/id', async (req, res) => {
+  const { vin, vehicle_type } = req.body;
+    
+  let type;
+  if (vehicle_type == 'car') type = 'Car';
+  else if (vehicle_type == 'convertible') type = 'Convertible';
+  else if (vehicle_type == 'suv') type = 'Suv';
+  else if (vehicle_type == 'truck') type = 'Truck';
+  else if (vehicle_type == 'vanMinivan') type = 'VanMinivan';
+
+
+  let sql = `SELECT * FROM Vehicle WHERE vin = '${vin}'`;
+  try {
+    const pool = await database('TEST').pool();
+    const vehicle = await pool.queryAsync(sql);
+
+    sql = `SELECT * FROM ${type} WHERE vin = '${vin}'`;
+    const typeInfo = await pool.queryAsync(sql);
+
+    res.send({ vehicle, typeInfo });
+  } catch(err) {
+    console.log(err);
+    res.status(500).send({error: err});
+  }
+});
+
+/**
+ * Get sale information by vin
+ */
+ router.post('/sale', async (req, res) => {
+  const { vin } = req.body;
+
+  const sql = `SELECT * FROM Sale WHERE vin = '${vin}'`;
+  try {
+    const pool = await database('TEST').pool();
+    const sale = await pool.queryAsync(sql);
+    res.send(sale);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send({error: err});
+  }
+});
+
+
+/**
+ * Get Repair information by vin
+ */
+ router.post('/repair', async (req, res) => {
+  const { vin } = req.body;
+
+  const sql = `SELECT * FROM Repair WHERE vin = '${vin}'`;
+  try {
+    const pool = await database('TEST').pool();
+    const repair = await pool.queryAsync(sql);
+    res.send(repair);
+  } catch(err) {
+    console.log(err);
+    res.status(500).send({error: err});
+  }
+});
+
+
 /**
  * view all colors in DB
  * Input: NULL
