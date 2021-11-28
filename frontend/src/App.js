@@ -24,6 +24,15 @@ import Repair from './pages/repair/repair';
 import AddRepairForm from './pages/repair/addRepair';
 import EditRepairForm from './pages/repair/editRepair';
 import AddPartForm from './pages/repair/addPart';
+import GrossCustomerIncome from './pages/other/grossCustomerIncome';
+import RepairReport from './pages/repair/repairReport';
+import BelowCostSales from './pages/sales/belowCostSales';
+import InventoryTime from './pages/other/inventoryTime';
+import PartsStatistics from './pages/parts/partsStatistics';
+import MonthlySales from './pages/sales/monthlySale';
+import CustomerIncomeDetail from './pages/other/customerIncomeDetail';
+import RepairReportDetail from './pages/repair/repairReportDetail';
+import MonthlySaleDetail from './pages/sales/monthlySaleDetail';
 // TODO: import more components here
 import SearchVehicleForm from './pages/vehicle/search';
 import AddVehicle from './pages/vehicle/add';
@@ -58,23 +67,22 @@ const App = () => {
             <Menu.Item key="6"><Link to="/repair">View Repair</Link></Menu.Item>
             <Menu.Item key="7"><Link to="/addRepair">Add Repair</Link></Menu.Item>
             <Menu.Item key="8"><Link to="/editRepair">Edit Repair</Link></Menu.Item>
-            <Menu.Item key="9">View Repair Report</Menu.Item>
+            <Menu.Item key="9"><Link to="/repairReport">View Repair Report</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="parts" icon={<TeamOutlined />} title="parts">
             <Menu.Item key="10"><Link to="/addPart">Add Parts</Link></Menu.Item>
-            <Menu.Item key="11">View Parts Statistics</Menu.Item>
+            <Menu.Item key="11"><Link to="/partsStatistics">View Parts Statistics</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="sales" icon={<FileOutlined />} title="sales">
             <Menu.Item key="12"><Link to="/byColor">Viwe Sales By Color</Link></Menu.Item>
             <Menu.Item key="13"><Link to="/byType">Viwe Sales By Type</Link></Menu.Item>
             <Menu.Item key="14"><Link to="/byManufacturer">Viwe Sales By Manufacturer</Link></Menu.Item>
-            <Menu.Item key="15">Viwe Monthly Sales</Menu.Item>
+            <Menu.Item key="15"><Link to="/monthlySales">View Monthly Sales</Link></Menu.Item>
+            <Menu.Item key="17"><Link to="/belowCostSales">View Below Cost Sales</Link></Menu.Item>
           </SubMenu>
           <SubMenu key="other" icon={<FileOutlined />} title="other">
-            <Menu.Item key="16">Viwe Gross Customer Income</Menu.Item>
-            <Menu.Item key="17">View Below Cost Sales</Menu.Item>
-            <Menu.Item key="18">Viwe Average Time in Inventory</Menu.Item>
-            <Menu.Item key="19">Viwe Monthly Sales</Menu.Item>
+            <Menu.Item key="16"><Link to="/grossCustomerIncome">View Gross Customer Income</Link></Menu.Item>
+            <Menu.Item key="18"><Link to="/inventoryTime">View Average Time in Inventory</Link></Menu.Item>
           </SubMenu>
         </Menu>
       </Sider>
@@ -91,11 +99,19 @@ const App = () => {
               <Route path="/byType" element={<SalesByTypeTable />} />
               <Route path="/byManufacturer" element={<SalesByManufacturerTable />} />
               <Route path="/vehicle/:id/:vehicle_type" element={<VehicleDetail />} />
+              <Route path="/grossCustomerIncome" element={<GrossCustomerIncome />} />
+              <Route path="/repairReport" element={<RepairReport />} />
+              <Route path="/belowCostSales" element={<BelowCostSales />} />
+              <Route path="/inventoryTime" element={<InventoryTime />} />
+              <Route path="/partsStatistics" element={<PartsStatistics />} />
+              <Route path="/monthlySales" element={<MonthlySales />} />
+              <Route path="/customerIncome/:customer_id" element={<CustomerIncomeDetail />} />
+              <Route path="/repairReportDetail/:manufacturer" element={<RepairReportDetail />} />
+              <Route path="/monthlySaleDetail/:year/:month" element={<MonthlySaleDetail />} />
               <Route path="/repair" element={<Repair />} />
               <Route path="/addRepair" element={<AddRepairForm />} />
               <Route path="/editRepair" element={<EditRepairForm />} />
               <Route path="/addPart" element={<AddPartForm />} />
-              {/* TODO: Register more routes here...... */}
               <Route path="/vehicle/search" element={<SearchVehicleForm />} />
               <Route path="/vehicle/add" element={<AddVehicle />} />
               <Route path="/vehicle/sell" element={<SellVehicleForm />} />

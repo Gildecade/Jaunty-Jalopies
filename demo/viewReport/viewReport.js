@@ -128,7 +128,7 @@ router.post("/grossCustomerIncome/repairs", async(req, res) => {
     FROM Repair t1
     INNER JOIN User t2
     ON t1.service_writer_username = t2.username
-    WHERE t1.customer_id = 1
+    WHERE t1.customer_id = '${customer_id}'
     ORDER BY start_date DESC, end_date, VIN ASC;`;
 
     try {
@@ -259,7 +259,7 @@ router.post("/belowCostSale", async(req, res) => {
 // view average time in inventory
 router.post("/averageTime", async(req, res) => {
     let sql = `SELECT t1.vehicle_type as vehicle_type,
-    avg(datediff(t2.purchase_date, t1.added_date)) as average_time
+    avg(datediff(t2.purchase_date, t1.added_date))+1 as average_time
     FROM Vehicle t1
     INNER JOIN Sale t2
     ON t1.vin = t2.vin
