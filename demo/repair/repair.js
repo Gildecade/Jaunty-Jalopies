@@ -30,13 +30,14 @@ router.post('/view', async (req, res) => {
     }
     sql = `SELECT r.vin as vin, r.start_date as start_date, r.complete_date as complete_date, r.odometer as odometer, r.labor_charge as labor_charge, 
               r.description as description, r.service_writer_username as service_writer_username, r.customer_id as customer_id, 
-              v.model_year as model_year, v.vehicle_type as vehicle_type, v.manufacturer as manufacturer, vc.color as color
+              v.model_year as model_year, v.vehicle_type as vehicle_type, v.manufacturer as manufacturer, GROUP_CONCAT(vc.color SEPARATOR ',') as color
               FROM Repair r 
               LEFT JOIN Vehicle v
               ON r.vin = v.vin
               LEFT JOIN VehicleColor vc
               ON r.vin = vc.vin
-              WHERE r.vin = '${vin}'`;
+              WHERE r.vin = '${vin}'
+              GROUP BY r.vin, r.start_date`;
 
     if (isEdit) {
       sql += `and r.start_date = '${start_date}'`;
@@ -62,14 +63,23 @@ router.post('/add', async (req, res) => {
     return
   }
 
-  let sql = `SELECT start_date, complete_date 
-                FROM Repair 
-                where vin = '${vin}'
-                ORDER BY start_date DESC
-                LIMIT 1`;
+  let sql = `SELECT id
+              FROM Customer
+              WHERE id = '${customer_id}';`;
 
   try {
     const pool = await database('TEST').pool();
+    const customer_result = await pool.queryAsync(sql);
+    if (customer_result.length === 0 || !customer_result[0].id) {
+      res.send({ 'msg': 'Customer not found, please add customer first' });
+      return
+    }
+
+    sql = `SELECT start_date, complete_date 
+            FROM Repair 
+            where vin = '${vin}'
+            ORDER BY start_date DESC
+            LIMIT 1`;
     const date_result = await pool.queryAsync(sql);
     if (date_result.length != 0 && date_result[0].start_date) {
       let res_start_date = JSON.stringify(date_result[0].start_date);
@@ -187,7 +197,7 @@ router.post('/parts', async (req, res) => {
             WHERE part_number = '${part_number}';`;
     result = await pool.queryAsync(sql);
     if (result.length != 0 && result[0].part_number) {
-      res.send({'msg': 'This part number has used, please change a number'});
+      res.send({ 'msg': 'This part number has used, please change a number' });
       return
     }
 
