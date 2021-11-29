@@ -9,7 +9,7 @@ const EditRepairForm = () => {
     const [inputDate, setInputDate] = useState('');
     const [repairDetail, setRepairDetail] = useState(null);
 
-    let user_type = localStorage.getItem('usertype');
+    let user_type = sessionStorage.getItem('usertype');
     let permission = user_type && (user_type === "Owner" || user_type === "Service Writer");
 
     const [form] = Form.useForm();
