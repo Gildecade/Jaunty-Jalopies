@@ -214,7 +214,7 @@ router.post('/parts', async (req, res) => {
 
   try {
     sql = `UPDATE Repair
-              SET labor_charge = labor_charge + '${total_price}'
+              SET parts_cost = parts_cost + '${total_price}'
               WHERE vin = '${vin}' and start_date = '${start_date}';`
     const pool = await database('TEST').pool();
     const result = await pool.queryAsync(sql);
