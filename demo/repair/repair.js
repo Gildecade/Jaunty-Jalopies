@@ -13,7 +13,7 @@ router.post('/view', async (req, res) => {
             FROM Vehicle 
             WHERE vin = '${vin}'`;
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     let vehicle_vin = await pool.queryAsync(sql);
     if (vehicle_vin.length == 0) {
       res.send({ 'msg': 'No corresponding vehicle' });
@@ -68,7 +68,7 @@ router.post('/add', async (req, res) => {
               WHERE id = '${customer_id}';`;
 
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const customer_result = await pool.queryAsync(sql);
     if (customer_result.length === 0 || !customer_result[0].id) {
       res.send({ 'msg': 'Customer not found, please add customer first' });
@@ -117,7 +117,7 @@ router.post('/edit', async (req, res) => {
                 WHERE vin = '${vin}' and start_date = '${start_date}';`;
 
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const charge_res = await pool.queryAsync(sql);
     let old_labor_charge = 0;
     if (charge_res.length != 0) {
@@ -156,7 +156,7 @@ router.post('/complete', async (req, res) => {
               WHERE vin = '${vin}' and start_date = '${start_date}';`
 
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     let result = await pool.queryAsync(sql);
     if (result.length != 0 && result[0].complete_date) {
       res.send({ 'msg': 'The repair has been completed' })
@@ -185,7 +185,7 @@ router.post('/parts', async (req, res) => {
               WHERE vin = '${vin}' and start_date = '${start_date}';`;
 
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     let result = await pool.queryAsync(sql);
     if (result.length == 0) {
       res.send({ 'msg': 'No corresponding repair to add parts' });
@@ -216,7 +216,7 @@ router.post('/parts', async (req, res) => {
     sql = `UPDATE Repair
               SET parts_cost = parts_cost + '${total_price}'
               WHERE vin = '${vin}' and start_date = '${start_date}';`
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const result = await pool.queryAsync(sql);
     res.send(result);
   } catch (err) {
