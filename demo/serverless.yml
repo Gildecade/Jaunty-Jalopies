@@ -12,17 +12,17 @@ inputs:
     timeout: 10 # 超时时间，单位秒
     memorySize: 512 # 内存大小，单位MB
     environments: #  环境变量
-      - key: DB_TEST_HOST
+      - key: DB_DEMO_HOST
         value: 10.0.192.16
-      - key: DB_TEST_PORT
+      - key: DB_DEMO_PORT
         value: 3306
-      - key: DB_TEST_USER
+      - key: DB_DEMO_USER
         value: root
-      - key: DB_TEST_PASSWORD
+      - key: DB_DEMO_PASSWORD
         value: xiayu130828
-      - key: DB_TEST_DATABASE
-        value: test
-      - key: DB_TEST_CONNECTION_LIMIT
+      - key: DB_DEMO_DATABASE
+        value: demo
+      - key: DB_DEMO_CONNECTION_LIMIT
         value: 100
     vpc: # 私有网络配置
       vpcId: 'vpc-4tceuyj1' # 私有网络的Id

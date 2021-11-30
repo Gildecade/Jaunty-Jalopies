@@ -7,14 +7,14 @@ const { TextArea } = Input;
 
 const AddRepairForm = () => {
 
-    let user_type = localStorage.getItem('usertype');
+    let user_type = sessionStorage.getItem('usertype');
     let permission = user_type && (user_type === "Owner" || user_type === "Service Writer");
 
     const onFinish = async (values) => {
         if (!values.description) {
             values.description = '';
         }
-        let condition = { ...values, USERNAME: localStorage.getItem('username') };
+        let condition = { ...values, USERNAME: sessionStorage.getItem('username') };
         console.log(condition);
 
         try {

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Form, Input, Button, Select, message, Space } from 'antd';
+import { Table, Form, Input, Button, Select, message, Space, InputNumber } from 'antd';
 import { domain } from '../../config';
+import {
+  Link
+} from "react-router-dom";
 
 import axios from 'axios';
 
@@ -56,10 +59,9 @@ const SearchVehicleForm = () => {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
-        // TODO: link to detail page
-        <Space size="middle">
+        <Link to={`/vehicle/${record.vin}/${record.vehicle_type}`}>
           <Button type="link">View Details</Button>
-        </Space>
+        </Link>
       ),
     },
   ];
@@ -90,12 +92,15 @@ const SearchVehicleForm = () => {
   const onFinish = async (values) => {
     console.log(values);
     try {
-      const result = await axios.post(`${domain}vehicle/search`, {...values, USERNAME: localStorage.getItem('username')});
+      const result = await axios.post(`${domain}vehicle/search`, {...values, USERNAME: sessionStorage.getItem('username')});
       if (result.data.msg) {
         message.info(result.data.msg);
       } else {
         message.success("Successfully found vehicle.");
-        setResult(result.data);
+        const data = result.data.map(f => {
+          return {...f, key: f.vin};
+        })
+        setResult(data);
       }
       
     } catch(err) {
@@ -107,7 +112,7 @@ const SearchVehicleForm = () => {
     
     <div>
       <Form form={form} onFinish={onFinish} labelCol={{ span: 4, }} wrapperCol={{ span: 8, }}>
-        { localStorage.getItem('usertype') ? 
+        { sessionStorage.getItem('usertype') ? 
           ( 
             <Form.Item label="VIN" name="vin" rules={[{required: false}]}><Input /></Form.Item>
           ) : 
@@ -136,7 +141,7 @@ const SearchVehicleForm = () => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Model Year" name="model_year" rules={[{required: false}]}><Input /></Form.Item>
+        <Form.Item label="Model Year" name="model_year" rules={[{required: false}]}><InputNumber min={100} max={2022} /></Form.Item>
         <Form.Item label="Price" name="list_price" rules={[{required: false}]}><Input addonBefore={prefixSelector} style={{ width: '100%' }} /></Form.Item>
         <Form.Item label="Key Word" name="key_word" rules={[{required: false}]}><Input /></Form.Item>
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>

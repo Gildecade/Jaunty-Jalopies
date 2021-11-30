@@ -1,0 +1,467 @@
+There is more than 10 files containing SQL quiries. So all the queries are listed below.
+
+[Login]
+1. Find if user matches record in User table
+SELECT username
+FROM User 
+WHERE username = '${username}' and password = '${password}'
+
+2. Find user type
+SELECT username
+FROM Owner
+WHERE username = '${username[0].username}'
+
+SELECT username
+FROM InventoryClerk
+WHERE username = '${username[0].username}'
+
+SELECT username
+FROM Salespeople
+WHERE username = '${username[0].username}'
+
+SELECT username
+FROM ServiceWriter
+WHERE username = '${username[0].username}'
+
+SELECT username
+FROM Manager
+WHERE username = '${username[0].username}'
+
+[Add/Lookup Customer]
+1. Find individual or business customer
+SELECT customer_id 
+FROM Individual 
+WHERE driver_license_number = '${driver_license_number}'
+
+SELECT customer_id 
+FROM Business 
+WHERE tax_id_number = '${tax_id_number}
+
+`SELECT id, city, postal_code, state, street_address, phone_number, email 
+FROM Customer 
+WHERE id = ${customerId[0].customer_id}`
+
+2. Add customer
+`INSERT INTO
+Customer(city, postal_code, state, street_address, phone_number, email)
+VALUES('${city}', '${postal_code}', '${state}', '${street_address}', '${phone_number}', '${email}');
+
+INSERT INTO
+Individual(first_name, last_name, driver_license_number, customer_id)
+VALUES('${first_name}', '${last_name}', '${driver_license_number}', ${insertId});
+
+INSERT INTO
+Business(pirmary_contact_name, pirmary_contact_title, tax_id_number, business_name, customer_id)
+VALUES('${pirmary_contact_name}', '${pirmary_contact_title}', '${tax_id_number}', '${business_name}', ${insertId});
+
+3. Find customer detail by customer_id
+SELECT * FROM Customer WHERE id = ${id}
+SELECT * FROM Individual WHERE customer_id = ${id}
+SELECT * FROM Business WHERE customer_id = ${id}
+
+[Search Vehicle]
+1. Find vin of vehicles satisfies searching criteria
+let sql_head = `SELECT
+                v.vin as vin
+            	FROM
+                VehicleColor as vc    
+                JOIN Vehicle as v
+                ON v.vin = vc.vin 
+            	WHERE
+                1 = 1 `;
+let sql_vin = (USERNAME && vin) ? `AND v.vin = ${vin} ` : "";
+let sql_vehicle_type = vehicle_type ? `AND v.vehicle_type = '${vehicle_type}' `: "";
+let sql_color = color ? `AND vc.color = '${color}' `: "";
+let sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
+let sql_model_year = model_year ? `AND v.model_year = ${model_year} `: "";
+let sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} ${list_price} `: "";
+let sql_key_word = key_word ? `AND v.description LIKE "%${key_word}%" `: "";
+let sql_tail =     `AND v.vin NOT IN 
+                    ( SELECT vin 
+                    FROM Sale s )
+                ORDER BY vin ASC`;
+let sql = sql_head + sql_vin + sql_vehicle_type + sql_color + sql_manufacturer_name 
++ sql_model_year + sql_list_price + sql_key_word + sql_tail;   
+
+2. Find information by VINs
+SELECT
+v.vin as vin,
+v.vehicle_type as vehicle_type,
+v.model_year as model_year,
+v.manufacturer as manufacturer,
+v.model_name as model_name,
+v.description as description,
+GROUP_CONCAT(vc.color) as color,
+v.invoice_price*1.25 as list_price
+FROM
+VehicleColor as vc
+JOIN Vehicle as v
+ON v.vin = vc.vin 
+WHERE
+v.vin IN (${vin_list})
+GROUP BY vc.vin
+ORDER BY vin ASC`;
+
+[Add Vehicle]
+1. Get color and munufacturer list
+SELECT * FROM Color
+
+SELECT * FROM Manufacturer
+
+2. Search vin in vehicle table to check if exists
+SELECT vin 
+FROM Vehicle
+WHERE vin = ${vin}
+
+3. If create new maunufacter
+Insert INTO Manufacturer
+    VALUES (${manufacturer})
+
+4. Insert into Vehicle table and know which vehicle type
+INSERT INTO Vehicle 
+( vin, description, added_Date, model_year, model_name, invoice_price, manufacturer, vehicle_type, inventory_clerk_username )
+VALUES
+( ${vin}, '${description}', '${current_date}', ${model_year}, '${model_name}', ${invoice_price}, '${manufacturer_name}', '${vehicle_type}', '${USERNAME}' );
+
+5. Insert in to VehicleColor table
+let color_list = color;
+        sql = `INSERT INTO VehicleColor( vin, color )
+        VALUES
+        `;
+        for (let i = 0; i < color_list.length; ++i) {
+            // last line no comma
+            if (i == color_list.length - 1) {
+                sql += `( ${vin}, '${color_list[i]}' );`;
+            }
+            else {
+                sql += `( ${vin}, '${color_list[i]}' ),`;
+            }
+        }
+6. Insert special information based on vehicle type
+switch (vehicle_type) {
+            case "car":
+                const { number_of_doors } = req.body;
+                sql = `INSERT INTO Car
+                        VALUES (${vin}, ${number_of_doors});`;
+                break;
+            case "convertible":
+                const { roof_type, back_seat_count } = req.body;
+                sql = `INSERT INTO Convertible
+                        VALUES (${vin}, '${roof_type}', ${back_seat_count});`;
+                break;
+            case "truck":
+                const { cargo_capacity, cargo_cover_type, number_of_rear_axles } = req.body;
+                sql = cargo_cover_type? `INSERT INTO Truck
+                VALUES (${vin}, ${cargo_capacity}, ${cargo_cover_type}, ${number_of_rear_axles});`: 
+                `INSERT INTO Truck(vin, cargo_capacity, number_of_rear_axles)
+                VALUES (${vin}, ${cargo_capacity}, ${number_of_rear_axles});`;
+                break;
+            case "suv":
+                const { number_of_cupholders, drivetrain_type } = req.body;
+                sql = `INSERT INTO Suv
+                        VALUES (${vin}, ${number_of_cupholders}, '${drivetrain_type}');`;
+                break;
+            default:
+                const { has_drivers_side_back_door } = req.body;
+                sql = `INSERT INTO VanMinivan
+                        VALUES (${vin}, ${has_drivers_side_back_door});`;
+                break;
+	}
+
+[Sell Vehicle]
+1. Get vehicle invoice_price to initialize sell vehicle
+SELECT invoice_price 
+  From Vehicle
+  WHERE vin = '${vin}'
+
+2. Insert into Sale table
+INSERT INTO Sale (vin, salespeople_username, customer_id, purchase_date, sold_price)
+      VALUES ('${vin}', '${USERNAME}', ${customer_id}, '${current_date}', ${sold_price})
+
+[View Repair]
+1. Check if exists
+SELECT vin 
+FROM Vehicle 
+WHERE vin = '${vin}'
+
+2. Check if sold
+SELECT vin 
+FROM Sale 
+WHERE vin = '${vin}'
+
+3. View repair
+SELECT r.vin as vin, r.start_date as start_date, r.complete_date as complete_date, r.odometer as odometer, r.labor_charge as labor_charge, 
+              r.description as description, r.service_writer_username as service_writer_username, r.customer_id as customer_id, 
+              v.model_year as model_year, v.vehicle_type as vehicle_type, v.manufacturer as manufacturer, vc.color as color
+              FROM Repair r 
+              LEFT JOIN Vehicle v
+              ON r.vin = v.vin
+              LEFT JOIN VehicleColor vc
+              ON r.vin = vc.vin
+              WHERE r.vin = '${vin}'
+
+[Add Repair]
+1. Find latest repair
+SELECT start_date, complete_date 
+FROM Repair 
+where vin = '${vin}'
+ORDER BY start_date DESC
+LIMIT 1`
+
+2.Add repair
+INSERT INTO
+Repair(vin, start_date, odometer, description, service_writer_username, customer_id)
+VALUES('${vin}', '${start_date}', '${odometer}', '${description}', '${USERNAME}', '${customer_id}');
+
+[Edit Repair]
+1. Update labor charge
+SELECT labor_charge as old_labor_charge 
+FROM Repair 
+WHERE vin = '${vin}' and start_date = '${start_date}';
+
+UPDATE Repair
+SET labor_charge = '${labor_charge}'
+WHERE vin = '${vin}' and start_date = '${start_date}';
+
+2. Complete repair
+SELECT complete_date
+FROM Repair
+WHERE vin = '${vin}' and start_date = '${start_date}';
+
+UPDATE Repair 
+SET complete_date = '${complete_date}'
+WHERE vin = '${vin}' and start_date = '${start_date}';
+
+3. Add parts
+SELECT part_number
+FROM Part
+WHERE part_number = '${part_number}';
+
+INSERT INTO 
+Part (vin, start_date, part_number, vendor_name, price, quantity)
+VALUES('${vin}', '${start_date}', '${part_number}', '${quantity}', '${vendor_name}', '${price}');
+
+UPDATE Repair
+SET larbor_charge = larbor_charge + '${total_price}'
+WHERE vin = '${vin}' and start_date = '${start_date}'
+
+[Sales by Color]
+1. Get all sold vehicle IDs, their color and purchase_date
+SELECT s.vin as vin, v.color as color, s.purchase_date as purchase_date
+FROM Sale s 
+LEFT OUTER JOIN VehicleColor v
+ON s.vin = v.vin;
+
+2. Get all colors
+SELECT color from Color
+
+3.Count the number of sold vehicles in term of color and purchase_date
+
+[Sales by Type]
+1. Get all sold vehicle IDs, their type and purchase_date
+SELECT s.vin as vin, v.vehicle_type as vehicle_type, s.purchase_date as purchase_date
+FROM Sale s 
+LEFT OUTER JOIN Vehicle v
+ON s.vin = v.vin;
+
+2. Construct report as the following structure
+const report = {
+      car: { past30Days: 0, pastYear: 0, allTime: 0 }, 
+      convertible: { past30Days: 0, pastYear: 0, allTime: 0 }, 
+      truck: { past30Days: 0, pastYear: 0, allTime: 0 },
+      vanMinivan: { past30Days: 0, pastYear: 0, allTime: 0 },
+      suv: { past30Days: 0, pastYear: 0, allTime: 0 }
+}
+
+3. Count the number of sold vehicles in term of color and purchase_date
+    const currentTimestamp = new Date().getTime();
+    for (const vin of soldVins) {
+      const timestamp = new Date(vin.purchase_date).getTime();
+      const type = vin.vehicle_type;
+      if (!report[type]) continue;
+
+      report[type]["allTime"] += 1;
+      if (timestamp >= currentTimestamp - 60 * 60 * 24 * 1000 * 365) {  // within last year
+        report[type]["pastYear"] += 1;
+      }
+      if (timestamp >= currentTimestamp - 60 * 60 * 24 * 1000 * 30) { // within last 30 days
+        report[type]["past30Days"] += 1;
+      }
+   }
+
+[Sales by Manufacturer]
+1. Get all sold vehicle IDs, their manufacturer and purchase_date
+SELECT s.vin as vin, v.Manufacturer as manufacturer, s.purchase_date as purchase_date
+FROM Sale s 
+LEFT OUTER JOIN Vehicle v
+ON s.vin = v.vin;
+
+2. construct report based on manufacturer category
+
+[View Gross Customer Income]
+1. View gross customer income 
+SELECT
+    t8.customer_id,
+    concat(ifnull(t6.business_name,""), ifnull( t5.first_name,""), " ", ifnull(t5.last_name,"")) as customer_name,
+    sum(income) as gross_income,
+    min(date) as first_date,
+    max(date) as recent_date
+    FROM ((SELECT
+    t2.id as customer_id,
+    t1.purchase_date as date,
+    t1.sold_price as income
+    FROM Sale as t1
+    LEFT JOIN Customer as t2
+    ON t1.customer_id = t2.id) 
+    union all
+    (SELECT
+    t4.id as customer_id,
+    t3.start_date as date,
+    t3.labor_charge+t3.parts_cost as income
+    FROM Repair as t3
+    LEFT JOIN Customer as t4
+    ON t3.customer_id = t4.id
+    )) t8
+    LEFT JOIN Individual t5 
+    ON t8.customer_id = t5.customer_id
+    LEFT JOIN Business t6
+    ON t8.customer_id = t6.customer_id
+    GROUP BY customer_id
+    ORDER BY gross_income DESC, recent_date DESC
+    LIMIT 15;
+
+SELECT customer_id,
+        count(1) as number_of_repairs
+        FROM Repair
+        GROUP BY customer_id
+        HAVING customer_id
+        IN (${customer_id_list});
+
+SELECT customer_id,
+        count(1) as number_of_sales
+        FROM Sale
+        GROUP BY customer_id
+        HAVING customer_id
+        IN (${customer_id_list});
+
+2. View gross customer income more details(sales)
+SELECT t1.purchase_date as sale_date,
+    t1.sold_price as sold_price, t1.vin as VIN,
+    t2.model_year as year,
+    t2.manufacturer as manufacturer,
+    t2.model_name as model,
+    concat(t3.first_name, " ", t3.last_name) as salesperson_name
+    FROM Sale as t1
+    INNER JOIN Vehicle t2
+    ON t1.VIN = t2.VIN
+    INNER JOIN User t3
+    ON t1.salespeople_username = t3.username
+    WHERE t1.customer_id = '${customer_id}'
+    ORDER BY sale_date DESC, VIN ASC
+
+3. View gross customer income more details(repairs)
+SELECT t1.start_date as start_date,
+    t1.complete_date as end_date,
+    t1.vin as VIN,
+    t1.odometer as odometer_reading,
+    t1.parts_cost as parts_cost,
+    t1.labor_charge as larbor_cost,
+    t1.parts_cost + t1.labor_charge as total_cost,
+    concat(t2.first_name, " ", t2.last_name) as service_writer_name
+    FROM Repair t1
+    INNER JOIN User t2
+    ON t1.service_writer_username = t2.username
+    WHERE t1.customer_id = '${customer_id}'
+    ORDER BY start_date DESC, end_date, VIN ASC;
+
+[View Repair Report]
+1. View repair report
+SELECT 
+    t3.name as manufacturer,
+    count(t1.labor_charge) as count_of_repairs,
+    sum(t1.parts_cost) as sum_parts_cost,
+    sum(t1.labor_charge) as sum_labor_cost,
+    sum(t1.parts_cost)+sum(t1.labor_charge) as sum_repair_cost
+    FROM Manufacturer t3 
+    LEFT JOIN (Vehicle t2
+    INNER JOIN Repair t1
+    ON t2.vin = t1.vin)
+    ON t3.name = t2.manufacturer
+    GROUP BY t3.name
+    ORDER BY t3.name ASC;
+
+2. View the repair stats of model of selected manufacturer
+SELECT t2.vehicle_type as vehicle_type,
+    t2.model_name as model,
+    count(1) as number_of_repairs,
+    sum(t1.parts_cost) as parts_cost,
+    sum(t1.labor_charge) as labor_cost,
+    sum(t1.parts_cost)+sum(t1.labor_charge) as total_cost
+    FROM Repair t1
+    INNER JOIN Vehicle t2
+    ON t1.vin = t2.vin
+    WHERE t2.manufacturer = '${manufacturer}'
+    GROUP BY vehicle_type, model
+    ORDER BY number_of_repairs DESC;
+
+[View Below Cost Sale]
+SELECT t1.vin as VIN,
+    t2.purchase_date as date,
+    t1.invoice_price as invoice_price,
+    t2.sold_price as sold_price,
+    CONCAT(ROUND(t2.sold_price/t1.invoice_price*100,2),'%') as price_ratio,
+    concat(ifnull(t6.business_name,""), ifnull( t5.first_name,""), " ", ifnull(t5.last_name,"")) as customer_name,
+    concat(t3.first_name, " ", t3.last_name) as salesperson_name
+    FROM Vehicle t1
+    INNER JOIN Sale t2
+    ON t1.vin = t2.vin and t1.invoice_price > t2.sold_price
+    INNER JOIN User t3
+    ON t2.salespeople_username = t3.username
+    INNER JOIN Customer t4
+    ON t2.customer_id = t4.id
+    LEFT JOIN Individual t5
+    ON t4.id = t5.customer_id
+    LEFT JOIN Business t6
+    ON t4.id = t6.customer_id
+    ORDER BY date DESC, price_ratio DESC;
+
+[View Average Time in Inventory]
+SELECT t1.vehicle_type as vehicle_type,
+    avg(datediff(t2.purchase_date, t1.added_date))+1 as average_time
+    FROM Vehicle t1
+    INNER JOIN Sale t2
+    ON t1.vin = t2.vin
+    GROUP BY vehicle_type;
+
+[View Parts Statistics]
+SELECT vendor_name, sum(quantity) as number_of_parts, sum(price*quantity) as total_spent
+    FROM Part
+    GROUP BY vendor_name;
+
+[View Monthly Sales]
+1. View monthly sales
+SELECT year(t1.purchase_date) as year,
+    month(t1.purchase_date) as month,
+    count(1) as number_of_vehicles,
+    sum(t1.sold_price) as total_sales_income,
+    sum(t1.sold_price-t2.invoice_price) as total_net_income,
+    CONCAT(ROUND(sum(t1.sold_price)/sum(t2.invoice_price)*100,2),'%') as price_ratio
+    FROM Sale t1
+    INNER JOIN Vehicle t2
+    ON t1.vin = t2.vin
+    GROUP BY year, month
+    ORDER BY year DESC, month DESC;
+
+2. View details of selected month
+SELECT concat(t2.first_name, " ", t2.last_name) as name,
+    count(1) as vehicles_sold,
+    sum(t1.sold_price) as total_sales
+    FROM Sale t1
+    INNER JOIN User t2
+    ON t1.salespeople_username = t2.username
+    WHERE year(t1.purchase_date) = '${year}' and month(t1.purchase_date) = '${month}'
+    GROUP BY t1.salespeople_username
+    ORDER BY vehicles_sold DESC, total_sales DESC
+    LIMIT 1;
+
+

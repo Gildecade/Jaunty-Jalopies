@@ -68,19 +68,19 @@ const AddVehicle = () => {
   const onFinish = async (values) => {
     let condition = {};
     if (isCar) {
-      condition = {...values, vehicle_type: "car", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "car", USERNAME: sessionStorage.getItem('username')};
     } 
     else if (isConvertible) {
-      condition = {...values, vehicle_type: "convertible", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "convertible", USERNAME: sessionStorage.getItem('username')};
     } 
     else if (isTruck) {
-      condition = {...values, vehicle_type: "truck", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "truck", USERNAME: sessionStorage.getItem('username')};
     } 
     else if (isSUV) {
-      condition = {...values, vehicle_type: "suv", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "suv", USERNAME: sessionStorage.getItem('username')};
     } 
     else {
-      condition = {...values, vehicle_type: "vanMinivan", USERNAME: localStorage.getItem('username')};
+      condition = {...values, vehicle_type: "vanMinivan", USERNAME: sessionStorage.getItem('username')};
     }
     console.log(condition);
 
@@ -99,7 +99,7 @@ const AddVehicle = () => {
   }
 
   return (
-    localStorage.getItem('usertype') ?
+    sessionStorage.getItem('usertype') ?
     <div>
       <Select placeholder="Select a option and change input text above" onChange={onChange}>
         <Option value="car">Car</Option>
@@ -130,9 +130,9 @@ const AddVehicle = () => {
         <Form.Item label="Model Year" name="model_year" rules={[{required: true}]}><InputNumber min={100} max={2022} /></Form.Item>
         <Form.Item label="Model Name" name="model_name" rules={[{required: true}]}><Input /></Form.Item>
         <Form.Item label="Added Date" name="current_date" rules={[{required: true}]}><DatePicker /></Form.Item>
-        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item label="Description" name="description" rules={[{required: true}]}><Input /></Form.Item>
-        <Form.Item label="Number of Doors" name="number_of_doors" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Number of Doors" name="number_of_doors" rules={[{required: true}]}><InputNumber min={1} /></Form.Item>
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>
           <Button type="primary" htmlType="submit">Submit</Button>
         </Form.Item>
@@ -160,10 +160,10 @@ const AddVehicle = () => {
         <Form.Item label="Model Year" name="model_year" rules={[{required: true}]}><InputNumber min={100} max={2022} /></Form.Item>
         <Form.Item label="Model Name" name="model_name" rules={[{required: true}]}><Input /></Form.Item>
         <Form.Item label="Added Date" name="current_date" rules={[{required: true}]}><DatePicker /></Form.Item>
-        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item label="Description" name="description" rules={[{required: true}]}><Input /></Form.Item>
         <Form.Item label="Roof Type" name="roof_type" rules={[{required: true}]}><Input /></Form.Item>
-        <Form.Item label="Back Seat Count" name="back_seat_count" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Back Seat Count" name="back_seat_count" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>
           <Button type="primary" htmlType="submit">Submit</Button>
         </Form.Item>
@@ -192,11 +192,11 @@ const AddVehicle = () => {
         <Form.Item label="Model Year" name="model_year" rules={[{required: true}]}><InputNumber min={100} max={2022} /></Form.Item>
         <Form.Item label="Model Name" name="model_name" rules={[{required: true}]}><Input /></Form.Item>
         <Form.Item label="Added Date" name="current_date" rules={[{required: true}]}><DatePicker /></Form.Item>
-        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item label="Description" name="description" rules={[{required: true}]}><Input /></Form.Item>
-        <Form.Item label="Cargo Capacity" name="cargo_capacity" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Cargo Capacity" name="cargo_capacity" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item label="Cargo Cover Type" name="cargo_cover_type" rules={[{required: true}]}><Input /></Form.Item>
-        <Form.Item label="Number of Rear Axles" name="number_of_rear_axles" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Number of Rear Axles" name="number_of_rear_axles" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>
           <Button type="primary" htmlType="submit">Submit</Button>
         </Form.Item>
@@ -225,9 +225,9 @@ const AddVehicle = () => {
         <Form.Item label="Model Year" name="model_year" rules={[{required: true}]}><InputNumber min={100} max={2022} /></Form.Item>
         <Form.Item label="Model Name" name="model_name" rules={[{required: true}]}><Input /></Form.Item>
         <Form.Item label="Added Date" name="current_date" rules={[{required: true}]}><DatePicker /></Form.Item>
-        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item label="Description" name="description" rules={[{required: true}]}><Input /></Form.Item>
-        <Form.Item label="Has Drivers Side Back Door" name="has_drivers_side_back_door" rules={[{required: true}]}><Input /></Form.Item>  
+        <Form.Item label="Has Drivers Side Back Door" name="has_drivers_side_back_door" rules={[{required: true}]}><InputNumber min={0} max={1} /></Form.Item>  
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>
           <Button type="primary" htmlType="submit">Submit</Button>
         </Form.Item>
@@ -256,9 +256,9 @@ const AddVehicle = () => {
         <Form.Item label="Model Year" name="model_year" rules={[{required: true}]}><InputNumber min={100} max={2022} /></Form.Item>
         <Form.Item label="Model Name" name="model_name" rules={[{required: true}]}><Input /></Form.Item>
         <Form.Item label="Added Date" name="current_date" rules={[{required: true}]}><DatePicker /></Form.Item>
-        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item label="Description" name="description" rules={[{required: true}]}><Input /></Form.Item>
-        <Form.Item label="Number of Cupholders" name="number_of_cupholders" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Number of Cupholders" name="number_of_cupholders" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item label="Drivetrain Type" name="drivetrain_type" rules={[{required: true}]}><Input /></Form.Item>
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>
           <Button type="primary" htmlType="submit">Submit</Button>

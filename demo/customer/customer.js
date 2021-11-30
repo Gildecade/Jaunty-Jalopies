@@ -95,7 +95,7 @@ router.post('/add', async (req, res) => {
    const { id } = req.params;
 
   // step 1: find Customer detail in Customer table
-  let sql = `SELECT * FROM Customer WHERE id = ${id}`;
+  let sql = `SELECT * FROM Customer WHERE id = '${id}'`;
   
   try {
     const pool = await database('TEST').pool();
