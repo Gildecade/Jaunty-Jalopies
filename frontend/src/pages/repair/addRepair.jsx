@@ -32,6 +32,8 @@ const AddRepairForm = () => {
     return (
         permission ?
             <div>
+                <h1>Add Repair</h1>
+                <br></br>
                 <div style={{ height: 40 }}></div>
                 <Form labelCol={{ span: 4, }} wrapperCol={{ span: 8, }} onFinish={onFinish}>
                     <Form.Item label="Vin" name="vin" rules={[{ required: true }]}><Input /></Form.Item>
@@ -47,7 +49,8 @@ const AddRepairForm = () => {
             </div>
             :
             <div>
-                <h1>No Access to this page. Please login.</h1>
+                <h1>Add Repair</h1>
+                <h1>No Access to this page. Please login as Service Writer or Owner.</h1>
             </div>
     );
 }

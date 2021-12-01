@@ -28,19 +28,19 @@ router.post('/view', async (req, res) => {
       res.send({ 'msg': 'The vehicle has not been sold' });
       return
     }
-    sql = `SELECT r.vin as vin, r.start_date as start_date, r.complete_date as complete_date, r.odometer as odometer, r.labor_charge as labor_charge, 
-              r.description as description, r.service_writer_username as service_writer_username, r.customer_id as customer_id, 
-              v.model_year as model_year, v.vehicle_type as vehicle_type, v.manufacturer as manufacturer, GROUP_CONCAT(vc.color SEPARATOR ',') as color
-              FROM Repair r 
-              LEFT JOIN Vehicle v
-              ON r.vin = v.vin
-              LEFT JOIN VehicleColor vc
-              ON r.vin = vc.vin
-              WHERE r.vin = '${vin}'
-              GROUP BY r.vin, r.start_date`;
+    let pre_sql = `SELECT r.vin as vin, r.start_date as start_date, r.complete_date as complete_date, r.odometer as odometer, r.labor_charge as labor_charge, 
+                    r.description as description, r.service_writer_username as service_writer_username, r.customer_id as customer_id, 
+                    v.model_year as model_year, v.vehicle_type as vehicle_type, v.manufacturer as manufacturer, GROUP_CONCAT(vc.color SEPARATOR ',') as color
+                    FROM Repair r 
+                    LEFT JOIN Vehicle v
+                    ON r.vin = v.vin
+                    LEFT JOIN VehicleColor vc
+                    ON r.vin = vc.vin
+                    WHERE r.vin = '${vin}'`;
+    sql = pre_sql + ` GROUP BY r.vin, r.start_date`;
 
     if (isEdit) {
-      sql += `and r.start_date = '${start_date}'`;
+      sql = pre_sql + `and r.start_date = '${start_date}' GROUP BY r.vin, r.start_date`;
     }
     let result = await pool.queryAsync(sql);
     res.send(result);
@@ -56,6 +56,12 @@ router.post('/add', async (req, res) => {
   const { vin, odometer, description, customer_id, USERNAME } = req.body;
   let date = new Date().toLocaleDateString().replace(/\//g, "-").toString();
   let date_arr = date.split('-');
+  if (date_arr[0].length == 1) {
+    date_arr[0] = '0' + date_arr[0];
+  }
+  if (date_arr[1].length == 1) {
+    date_arr[1] = '0' + date_arr[1];
+  }
   let start_date = date_arr[2] + '-' + date_arr[0] + '-' + date_arr[1];
 
   if (!customer_id) {
@@ -72,6 +78,15 @@ router.post('/add', async (req, res) => {
     const customer_result = await pool.queryAsync(sql);
     if (customer_result.length === 0 || !customer_result[0].id) {
       res.send({ 'msg': 'Customer not found, please add customer first' });
+      return
+    }
+
+    sql = `SELECT vin 
+            FROM Vehicle 
+            WHERE vin = '${vin}'`;
+    const vin_result = await pool.queryAsync(sql);
+    if (vin_result.length === 0 || !vin_result[0].vin) {
+      res.send({ 'msg': 'No corresponding vehicle' });
       return
     }
 
@@ -194,7 +209,7 @@ router.post('/parts', async (req, res) => {
 
     sql = `SELECT part_number
             FROM Part
-            WHERE part_number = '${part_number}';`;
+            WHERE part_number = '${part_number}' and vin = '${vin}' and start_date = '${start_date}';`;
     result = await pool.queryAsync(sql);
     if (result.length != 0 && result[0].part_number) {
       res.send({ 'msg': 'This part number has used, please change a number' });
