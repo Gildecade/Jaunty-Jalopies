@@ -10,6 +10,7 @@ const Authentication = () => {
   const [form] = Form.useForm();
 
   const [usertype, setUsertype] = useState(null);
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
     const usertype = sessionStorage.getItem('usertype');
@@ -26,6 +27,7 @@ const Authentication = () => {
         sessionStorage.setItem("usertype", result.data);
         sessionStorage.setItem("username", values.username);
         setUsertype(result.data);
+        setUsername(values.username);
       }
     } catch (err) {
       message.error("Internal error. Try again.");
@@ -77,7 +79,7 @@ const Authentication = () => {
         ) : 
         (
           <div style={{marginLeft: '40px',}}>
-            <span>Successfully logged in As {usertype} </span>
+            <span>Welcome, {username}. Successfully logged in As {usertype} </span>
             <Button type="danger" onClick={logout}>Logout</Button>
           </div>
         )
