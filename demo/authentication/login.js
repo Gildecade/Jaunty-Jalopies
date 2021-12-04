@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
                 FROM User 
                 WHERE username = '${username}' and password = '${password}'`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let username = await pool.queryAsync(sql);
         if (username.length == 0) {
           res.send(null);

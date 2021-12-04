@@ -37,7 +37,7 @@ router.post("/grossCustomerIncome", async(req, res) => {
     LIMIT 15;`;
 
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let gross_customer_income = await pool.queryAsync(sql);
         if(gross_customer_income.length==0){
             res.send(null);
@@ -103,7 +103,7 @@ router.post("/grossCustomerIncome/sales", async(req, res) => {
     ORDER BY sale_date DESC, VIN ASC`;
 
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
         
         res.send(result.length==0 ? null : result);
@@ -132,7 +132,7 @@ router.post("/grossCustomerIncome/repairs", async(req, res) => {
     ORDER BY start_date DESC, end_date, VIN ASC;`;
 
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
         
         res.send(result.length==0 ? null : result);
@@ -159,7 +159,7 @@ router.post("/repairReport", async(req, res) => {
     GROUP BY t3.name
     ORDER BY t3.name ASC;`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
         
         res.send(result.length==0 ? null : result);
@@ -185,7 +185,7 @@ router.post("/repairReport/type", async(req, res) => {
     GROUP BY vehicle_type
     ORDER BY number_of_repairs DESC;`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
 
         res.send(result.length==0 ? null : result);
@@ -212,7 +212,7 @@ router.post("/repairReport/model", async(req, res) => {
     GROUP BY vehicle_type, model
     ORDER BY number_of_repairs DESC;`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
 
         res.send(result.length==0 ? null : result);
@@ -245,7 +245,7 @@ router.post("/belowCostSale", async(req, res) => {
     ON t4.id = t6.customer_id
     ORDER BY date DESC, price_ratio DESC;`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
 
         res.send(result.length==0 ? null : result);
@@ -265,7 +265,7 @@ router.post("/averageTime", async(req, res) => {
     ON t1.vin = t2.vin
     GROUP BY vehicle_type;`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
 
         res.send(result.length==0 ? null : result);
@@ -282,7 +282,7 @@ router.post("/partStatistics", async(req, res) => {
     FROM Part
     GROUP BY vendor_name;`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
 
         res.send(result.length==0 ? null : result);
@@ -308,7 +308,7 @@ router.post("/monthlySales", async(req, res) => {
     GROUP BY year, month
     ORDER BY year DESC, month DESC;`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
 
         res.send(result.length==0 ? null : result);
@@ -334,7 +334,7 @@ router.post("/monthlySales/details", async(req, res) => {
     ORDER BY vehicles_sold DESC, total_sales DESC
     LIMIT 1;`;
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
 
         res.send(result.length==0 ? null : result);

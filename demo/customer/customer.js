@@ -25,7 +25,7 @@ router.post('/lookup', async (req, res) => {
   }
   
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     let customerId = await pool.queryAsync(sql);
 
     if (customerId.length == 0) {
@@ -62,7 +62,7 @@ router.post('/add', async (req, res) => {
             VALUES('${city}', '${postal_code}', '${state}', '${street_address}', '${phone_number}', '${email}');`;
   
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const customerRecord = await pool.queryAsync(sql);
     const { insertId } = customerRecord;  // get the customer_id of newly inserted record
 
@@ -98,7 +98,7 @@ router.post('/add', async (req, res) => {
   let sql = `SELECT * FROM Customer WHERE id = '${id}'`;
   
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const customerData = await pool.queryAsync(sql);
     if (customerData.length === 0) {
       res.send([]); // return empty array
