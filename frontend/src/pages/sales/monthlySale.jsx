@@ -64,7 +64,7 @@ const MonthlySales = () => {
           return (
             <div
               style={{
-                color: record.total_sales_income/(record.total_sales_income-record.total_net_income) >= 1.25  ? '#24b39b' : (record.total_sales_income/(record.total_sales_income-record.total_net_income) <= 1.1  ?'#DB4C64' : '#000'),
+                color: record.total_sales_income/(record.total_sales_income-record.total_net_income) >= 1.25  ? '#24b39b' : (record.total_sales_income/(record.total_sales_income-record.total_net_income) <= 1.1  ?'#F7BA0B' : '#000'),
               }}
             >
               {text}
