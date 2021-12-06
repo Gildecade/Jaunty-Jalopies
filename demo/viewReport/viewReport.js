@@ -9,7 +9,7 @@ router.post("/grossCustomerIncome", async(req, res) => {
     SELECT
     t8.customer_id,
     concat(ifnull(t6.business_name,""), ifnull( t5.first_name,""), " ", ifnull(t5.last_name,"")) as customer_name,
-    sum(income) as gross_income,
+    round(sum(income), 2) as gross_income,
     min(date) as first_date,
     max(date) as recent_date
     FROM ((SELECT
@@ -123,7 +123,7 @@ router.post("/grossCustomerIncome/repairs", async(req, res) => {
     t1.odometer as odometer_reading,
     t1.parts_cost as parts_cost,
     t1.labor_charge as larbor_cost,
-    t1.parts_cost + t1.labor_charge as total_cost,
+    round(t1.parts_cost + t1.labor_charge, 2) as total_cost,
     concat(t2.first_name, " ", t2.last_name) as service_writer_name
     FROM Repair t1
     INNER JOIN User t2
@@ -148,9 +148,9 @@ router.post("/repairReport", async(req, res) => {
     let sql = `SELECT 
     t3.name as manufacturer,
     count(t1.labor_charge) as count_of_repairs,
-    sum(t1.parts_cost) as sum_parts_cost,
-    sum(t1.labor_charge) as sum_labor_cost,
-    sum(t1.parts_cost)+sum(t1.labor_charge) as sum_repair_cost
+    round(sum(t1.parts_cost), 2) as sum_parts_cost,
+    round(sum(t1.labor_charge), 2) as sum_labor_cost,
+    round(sum(t1.parts_cost)+sum(t1.labor_charge), 2) as sum_repair_cost
     FROM Manufacturer t3 
     LEFT JOIN (Vehicle t2
     INNER JOIN Repair t1
@@ -175,9 +175,9 @@ router.post("/repairReport/type", async(req, res) => {
     const {manufacturer} = req.body; 
     let sql = `SELECT t2.vehicle_type as vehicle_type,
     count(1) as number_of_repairs,
-    sum(t1.parts_cost) as parts_cost,
-    sum(t1.labor_charge) as labor_cost,
-    sum(t1.parts_cost)+sum(t1.labor_charge) as total_cost
+    round(sum(t1.parts_cost), 2) as parts_cost,
+    round(sum(t1.labor_charge), 2) as labor_cost,
+    round(sum(t1.parts_cost)+sum(t1.labor_charge), 2) as total_cost
     FROM Repair t1
     INNER JOIN Vehicle t2
     ON t1.vin = t2.vin
@@ -202,15 +202,15 @@ router.post("/repairReport/model", async(req, res) => {
     let sql = `SELECT t2.vehicle_type as vehicle_type,
     t2.model_name as model,
     count(1) as number_of_repairs,
-    sum(t1.parts_cost) as parts_cost,
-    sum(t1.labor_charge) as labor_cost,
-    sum(t1.parts_cost)+sum(t1.labor_charge) as total_cost
+    round(sum(t1.parts_cost), 2) as parts_cost,
+    round(sum(t1.labor_charge), 2) as labor_cost,
+    round(sum(t1.parts_cost)+sum(t1.labor_charge), 2) as total_cost
     FROM Repair t1
     INNER JOIN Vehicle t2
     ON t1.vin = t2.vin
     WHERE t2.manufacturer = '${manufacturer}'
     GROUP BY vehicle_type, model
-    ORDER BY number_of_repairs DESC;`;
+    ORDER BY vehicle_type ASC, number_of_repairs DESC;`;
     try {
         const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
@@ -259,7 +259,7 @@ router.post("/belowCostSale", async(req, res) => {
 // view average time in inventory
 router.post("/averageTime", async(req, res) => {
     let sql = `SELECT t1.vehicle_type as vehicle_type,
-    avg(datediff(t2.purchase_date, t1.added_date))+1 as average_time
+    round(avg(datediff(t2.purchase_date, t1.added_date))+1, 0) as average_time
     FROM Vehicle t1
     INNER JOIN Sale t2
     ON t1.vin = t2.vin
@@ -278,7 +278,7 @@ router.post("/averageTime", async(req, res) => {
 
 // view parts statistics
 router.post("/partStatistics", async(req, res) => {
-    let sql = `SELECT vendor_name, sum(quantity) as number_of_parts, sum(price*quantity) as total_spent
+    let sql = `SELECT vendor_name, sum(quantity) as number_of_parts, round(sum(price*quantity), 2) as total_spent
     FROM Part
     GROUP BY vendor_name;`;
     try {
@@ -299,8 +299,8 @@ router.post("/monthlySales", async(req, res) => {
     let sql = `SELECT year(t1.purchase_date) as year,
     month(t1.purchase_date) as month,
     count(1) as number_of_vehicles,
-    sum(t1.sold_price) as total_sales_income,
-    sum(t1.sold_price-t2.invoice_price) as total_net_income,
+    round(sum(t1.sold_price), 2) as total_sales_income,
+    round(sum(t1.sold_price-t2.invoice_price), 2) as total_net_income,
     CONCAT(ROUND(sum(t1.sold_price)/sum(t2.invoice_price)*100,2),'%') as price_ratio
     FROM Sale t1
     INNER JOIN Vehicle t2
