@@ -25,7 +25,9 @@ const SalesByManufacturerTable = () => {
         message.error("Internal error. Please try again.");
       }
     }
-    fetchData();
+    if (sessionStorage.getItem('usertype') === "Owner" || sessionStorage.getItem('usertype') === "Manager") {
+      fetchData();
+    }
   }, []);
 
   const columns = [
