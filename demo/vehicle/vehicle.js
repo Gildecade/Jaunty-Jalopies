@@ -4,7 +4,7 @@ const router = express.Router();
 const database = require('scf-nodejs-serverlessdb-sdk').database;
 
 /**
- * Search vehicle by driver_license_number or tax_id_number
+ * Search vehicle
  * Input: vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME
  * Ouput: Vehicle Record
  */
@@ -78,6 +78,94 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
         res.status(500).send({ error: err });
         return;
     }
+});
+
+
+/**
+ * Search vehicle by manager
+ * Input: vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME
+ * Ouput: Vehicle Record
+ */
+ router.post('/search_manager', async (req, res) => {
+  const { vin, vehicle_type, color, manufacturer_name, model_year, list_price, operand, key_word, USERNAME, filter } = req.body;
+
+  // if USERNAME is null, then anonymous search
+  // else can use vin to search
+  let sql_head = `SELECT
+              v.vin as vin
+          FROM
+              VehicleColor as vc    
+              JOIN Vehicle as v
+              ON v.vin = vc.vin `;
+
+  let sql_vin = (USERNAME && vin) ? `AND v.vin = '${vin}' ` : "";
+  let sql_vehicle_type = vehicle_type ? `AND v.vehicle_type = '${vehicle_type}' `: "";
+  let sql_color = color ? `AND vc.color = '${color}' `: "";
+  let sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
+  let sql_model_year = model_year ? `AND v.model_year = ${model_year} `: "";
+  let sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} ${list_price} `: "";
+  let sql_key_word = key_word ? `AND (v.description LIKE "%${key_word}%" 
+  OR v.manufacturer LIKE "%${key_word}%" 
+  OR v.model_year LIKE "%${key_word}%" 
+  OR v.model_name LIKE "%${key_word}%") `: "";
+
+  let sql_tail = ``;
+  if (filter == "unsold")
+  {
+    sql_tail = `AND v.vin NOT IN 
+    ( SELECT vin 
+    FROM Sale s )
+    ORDER BY vin ASC`;
+  }
+  else if (filter == "sold")
+  {
+    sql_tail = `AND v.vin IN 
+    ( SELECT vin 
+    FROM Sale s )
+    ORDER BY vin ASC`;
+  }
+  let sql = sql_head + sql_vin + sql_vehicle_type + sql_color + sql_manufacturer_name 
+  + sql_model_year + sql_list_price + sql_key_word + sql_tail;            
+    
+  
+  try {
+      const pool = await database('DEMO').pool();
+      let result = await pool.queryAsync(sql);
+  
+      // if no vehicle exists
+      if (result.length == 0) {
+          res.send({'msg': "Sorry, it looks like we don’t have that in stock!"});
+          return;
+      }
+
+      const vin_list = result.map(f => `"${f.vin}"`);
+
+      let sql2 = `SELECT
+                      v.vin as vin,
+                      v.vehicle_type as vehicle_type,
+                      v.model_year as model_year,
+                      v.manufacturer as manufacturer,
+                      v.model_name as model_name,
+                      v.description as description,
+                      GROUP_CONCAT(vc.color) as color,
+                      v.invoice_price*1.25 as list_price
+                  FROM
+                      VehicleColor as vc
+                      JOIN Vehicle as v
+                      ON v.vin = vc.vin 
+                      AND
+                      v.vin IN (${vin_list})
+                  GROUP BY vc.vin
+                  ORDER BY vin ASC`;
+      result = await pool.queryAsync(sql2);
+      res.send(result);
+      return;
+  } 
+  catch (err) {
+      console.log(err);
+      res.status(500).send({ error: err });
+      return;
+  }
 });
 
 
@@ -431,18 +519,29 @@ router.post('/id', async (req, res) => {
 });
 
 /**
- * view all customers ID in DB
+ * view the number of all vehicles
  * Input: NULL
  * Ouput: 
- *    all customers ID
+ *    sum of vehicles
  */
  router.post('/get_vehicle_number', async (req, res) => {
-  let sql = `SELECT id FROM Customer`;
+  let sql = `SELECT
+                count(1)
+              AS vehicle_sum
+              FROM
+                Vehicle as v
+              WHERE
+                v.vin NOT IN (
+                  SELECT
+                    vin
+                  FROM
+                    Sale s
+                )`;
   
   try {
       const pool = await database('DEMO').pool();
-      const customer_result = await pool.queryAsync(sql);
-      res.send(customer_result);
+      const vehicle_number = await pool.queryAsync(sql);
+      res.send(vehicle_number);
   } catch (err) {
     console.log(err);
     res.status(500).send({error: err});

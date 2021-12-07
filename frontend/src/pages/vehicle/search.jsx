@@ -13,6 +13,8 @@ const SearchVehicleForm = () => {
   const [result, setResult] = useState(null);
   const [ colors, setColors] = useState([]);
   const [ manufacturers, setManufacturers] = useState([]);
+  const [ vehicle_number, setVehicleNumber] = useState([]);
+  const USERTYPE = sessionStorage.getItem('usertype');
 
   const columns = [
     {
@@ -81,18 +83,31 @@ const SearchVehicleForm = () => {
     const initialize = async () => {
       const colors = await axios.post(`${domain}vehicle/get_colors`);
       const manufacturers = await axios.post(`${domain}vehicle/get_manufacturers`);
+      const vin_sums = await axios.post(`${domain}vehicle/get_vehicle_number`);
       const data = colors.data.map(color => color.color);
       const data1 = manufacturers.data.map(manufacturer => manufacturer.name);
+      const data2 = vin_sums.data.map(vin_sum => vin_sum.vehicle_sum);
       setColors(data);
       setManufacturers(data1);
+      setVehicleNumber(data2);
     }
     initialize();
   }, []);
 
   const onFinish = async (values) => {
     console.log(values);
+
     try {
-      const result = await axios.post(`${domain}vehicle/search`, {...values, USERNAME: sessionStorage.getItem('username')});
+      let result;
+      if (USERTYPE == 'Manager' || USERTYPE == 'Owner')
+      {
+        result = await axios.post(`${domain}vehicle/search_manager`, {...values, USERNAME: sessionStorage.getItem('username')});
+      }
+      else
+      {
+        result = await axios.post(`${domain}vehicle/search`, {...values, USERNAME: sessionStorage.getItem('username')});
+      }
+      
       if (result.data.msg) {
         message.info(result.data.msg);
       } else {
@@ -111,8 +126,11 @@ const SearchVehicleForm = () => {
   return (
     
     <div>
+      <div>
+        <font size="18">The total number of vehicles available for purchase: {vehicle_number}</font>
+      </div>
       <Form form={form} onFinish={onFinish} labelCol={{ span: 4, }} wrapperCol={{ span: 8, }}>
-        { sessionStorage.getItem('usertype') ? 
+        { USERTYPE ? 
           ( 
             <Form.Item label="VIN" name="vin" rules={[{required: false}]}><Input /></Form.Item>
           ) : 
@@ -144,6 +162,18 @@ const SearchVehicleForm = () => {
         <Form.Item label="Model Year" name="model_year" rules={[{required: false}]}><InputNumber min={100} max={2022} /></Form.Item>
         <Form.Item label="Price" name="list_price" rules={[{required: false}]}><Input addonBefore={prefixSelector} style={{ width: '100%' }} /></Form.Item>
         <Form.Item label="Key Word" name="key_word" rules={[{required: false}]}><Input /></Form.Item>
+        { USERTYPE == 'Manager' || USERTYPE == 'Owner' ? 
+          ( 
+            <Form.Item label="Status" name="filter" rules={[{required: false}]}>
+              <Select defaultValue="unsold">
+                <Option value="sold">Sold</Option>
+                <Option value="unsold">Unsold</Option>
+                <Option value="all">All</Option>
+              </Select>
+            </Form.Item>
+          ) : 
+          (<div></div>)
+        }
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>
           <Button type="primary" htmlType="submit">Lookup</Button>
         </Form.Item>
