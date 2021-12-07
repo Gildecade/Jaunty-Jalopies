@@ -22,7 +22,7 @@ router.post("/byColor", async(req, res) => {
               ON s.vin = v.vin;`;
   try {
     // step 1: get all sold vehicle IDs, their color and purchase_date
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const soldVins = await pool.queryAsync(sql);
 
     // get the count of each vins, which are vehicles that have more than one color
@@ -79,7 +79,7 @@ router.post("/byType", async(req, res) => {
               ON s.vin = v.vin;`;
   try {
     // step 1: get all sold vehicle IDs, their type and purchase_date
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const soldVins = await pool.queryAsync(sql);
 
     // step 2: construct report as the following structure
@@ -127,7 +127,7 @@ router.post("/byManufacturer", async(req, res) => {
 
   try {
     // step 1: get all sold vehicle IDs, their manufacturer and purchase_date
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const soldVins = await pool.queryAsync(sql);
 
     // step 2: construct report based on manufacturer category
