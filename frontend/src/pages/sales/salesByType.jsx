@@ -62,7 +62,7 @@ const SalesByTypeTable = () => {
     </div>
     :
     <div>
-      <h1>No Access to this page. Please login as Owner.</h1>
+      <h1>No Access to this page. Please login as Owner or Manager.</h1>
     </div>
   );
 }

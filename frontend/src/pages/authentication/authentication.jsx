@@ -14,7 +14,9 @@ const Authentication = () => {
 
   useEffect(() => {
     const usertype = sessionStorage.getItem('usertype');
+    const username = sessionStorage.getItem('username');
     setUsertype(usertype);
+    setUsername(username);
   }, []);
 
   const login = async (values) => {

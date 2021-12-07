@@ -54,7 +54,7 @@ router.post('/view', async (req, res) => {
 // Add repair
 router.post('/add', async (req, res) => {
   const { vin, odometer, description, customer_id, USERNAME } = req.body;
-  let date = new Date().toLocaleDaDEMOring().replace(/\//g, "-").toString();
+  let date = new Date().toLocaleDateString().replace(/\//g, "-").toString();
   let date_arr = date.split('-');
   if (date_arr[0].length == 1) {
     date_arr[0] = '0' + date_arr[0];
@@ -162,7 +162,7 @@ router.post('/edit', async (req, res) => {
 // Complete repair
 router.post('/complete', async (req, res) => {
   const { vin, start_date } = req.body;
-  let date = new Date().toLocaleDaDEMOring().replace(/\//g, "-").toString();
+  let date = new Date().toLocaleDateString().replace(/\//g, "-").toString();
   let date_arr = date.split('-');
   let complete_date = date_arr[2] + '-' + date_arr[0] + '-' + date_arr[1];
 
