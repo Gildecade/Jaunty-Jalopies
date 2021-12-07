@@ -53,11 +53,20 @@ const BelowCostSales = () => {
       dataIndex: 'sold_price',
       key: 'sold_price',
     },
-    {
-        title: 'Price Ratio',
-        dataIndex: 'price_ratio',
-        key: 'price_ratio',
+    {   title: 'Price Ratio',
+    dataIndex: 'price_ratio',
+    render: (text, record) => {
+      return (
+        <div
+          style={{
+            color: (record.sold_price/record.invoice_price) <=0.95  ? '#DB4C64' :  '#000',
+          }}
+        >
+          {text}
+        </div>
+      );
     },
+},
     {
         title: 'Customer Name',
         dataIndex: 'customer_name',
