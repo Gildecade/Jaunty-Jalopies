@@ -98,7 +98,7 @@ const SearchVehicleForm = () => {
       } else {
         message.success("Successfully found vehicle.");
         const data = result.data.map(f => {
-          return {...f, key: f.vin};
+          return {...f, key: f.vin, list_price: f.list_price.toFixed(2), };
         })
         setResult(data);
       }

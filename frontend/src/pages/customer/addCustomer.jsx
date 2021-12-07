@@ -67,8 +67,8 @@ const AddCustomerForm = () => {
           <Form.Item label="Street Address" name="street_address" rules={[{required: true}]}><Input /></Form.Item>
           <Form.Item label="Phone Number" name="phone_number" rules={[{required: true}]}><Input /></Form.Item>
           <Form.Item label="Email" name="email" rules={[{required: true}]}><Input /></Form.Item>
-          <Form.Item label="Primary Contact Name" name="pirmary_contact_name" rules={[{required: true}]}><Input /></Form.Item>
-          <Form.Item label="Primary Contact Title" name="pirmary_contact_title" rules={[{required: true}]}><Input /></Form.Item>
+          <Form.Item label="Primary Contact Name" name="primary_contact_name" rules={[{required: true}]}><Input /></Form.Item>
+          <Form.Item label="Primary Contact Title" name="primary_contact_title" rules={[{required: true}]}><Input /></Form.Item>
           <Form.Item label="Tax ID Number" name="tax_id_number" rules={[{required: true}]}><Input /></Form.Item>
           <Form.Item label="Business Name" name="business_name" rules={[{required: true}]}><Input /></Form.Item>
           <Form.Item wrapperCol={{ offset: 4, span: 16, }}>

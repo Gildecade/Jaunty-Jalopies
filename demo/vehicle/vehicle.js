@@ -49,7 +49,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
             return;
         }
 
-        const vin_list = result.map(f => f.vin);
+        const vin_list = result.map(f => `"${f.vin}"`);
 
         let sql2 = `SELECT
                         v.vin as vin,

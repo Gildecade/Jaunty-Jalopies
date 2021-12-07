@@ -4,6 +4,7 @@ import { domain } from '../../config';
 import { useParams, Link } from 'react-router-dom';
 
 import axios from 'axios';
+import moment from 'moment';
 
 
 const VehicleDetail = () => {
@@ -20,6 +21,7 @@ const VehicleDetail = () => {
     try {
       const vehicleData = await axios.post(`${domain}vehicle/id`, { vin: id, vehicle_type: vehicle_type });
       console.log("vehicleData", vehicleData);
+      vehicleData.data.vehicle[0].added_date = vehicleData.data.vehicle[0].added_date.substring(0, 10);
       setVehicleData(vehicleData.data);
     } catch(err) {
       console.log(err);
@@ -55,6 +57,8 @@ const VehicleDetail = () => {
     }
   };
 
+  // TODO: add colors to vehicle detail page
+
   useEffect(() => {
     const usertype = sessionStorage.getItem('usertype');
 
@@ -73,7 +77,7 @@ const VehicleDetail = () => {
         <Descriptions title="Vehicle Information" bordered>
           <Descriptions.Item label="VIN">{vehicleData.vehicle[0].vin}</Descriptions.Item>
           <Descriptions.Item label="Description">{vehicleData.vehicle[0].description}</Descriptions.Item>
-          <Descriptions.Item label="Added Date">{vehicleData.vehicle[0].added_date}</Descriptions.Item>
+          <Descriptions.Item label="Added Date">{vehicleData.vehicle[0].added_date }</Descriptions.Item>
           <Descriptions.Item label="Inventory Clerk Username">{vehicleData.vehicle[0].inventory_clerk_username}</Descriptions.Item>
           <Descriptions.Item label="Invoice Price">{vehicleData.vehicle[0].invoice_price}</Descriptions.Item>
           <Descriptions.Item label="Manufacturer">{vehicleData.vehicle[0].manufacturer}</Descriptions.Item>
@@ -107,7 +111,8 @@ const VehicleDetail = () => {
           <Descriptions.Item label="Odometer">{repairData[0].odometer}</Descriptions.Item>
           <Descriptions.Item label="Parts Cost">{repairData[0].parts_cost}</Descriptions.Item>
           <Descriptions.Item label="Servic Writer Username">{repairData[0].service_writer_username}</Descriptions.Item>
-          <Descriptions.Item label="Customer Information">{JSON.stringify(customerData[0])}</Descriptions.Item>
+          <Descriptions.Item label="Customer Information">{JSON.stringify(customerData[0])}</Descriptions.Item> 
+          {/* TODO: show customer info */}
         </Descriptions>
         :
         <Descriptions title="Vehicle Repair Information" bordered>

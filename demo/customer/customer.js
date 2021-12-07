@@ -49,7 +49,7 @@ router.post('/lookup', async (req, res) => {
  * add customer
  * Input: isIndividual -> bool, isBusiness -> bool, (indicating which category the user is adding)
  *     if isIndividual is true, then first_name, last_name, driver_license_number, customer_id is required
- *     if isBusiness is true, then pirmary_contact_name, pirmary_contact_title, tax_id_number, business_name, customer_id is required
+ *     if isBusiness is true, then primary_contact_name, primary_contact_title, tax_id_number, business_name, customer_id is required
  * Output: 200 ok if no error, otherwise return 500 http code.
  */
 router.post('/add', async (req, res) => {
@@ -73,10 +73,10 @@ router.post('/add', async (req, res) => {
             Individual(first_name, last_name, driver_license_number, customer_id)
             VALUES('${first_name}', '${last_name}', '${driver_license_number}', ${insertId});`;
     } else if (isBusiness) {
-      const { pirmary_contact_name, pirmary_contact_title, tax_id_number, business_name } = req.body;
+      const { primary_contact_name, primary_contact_title, tax_id_number, business_name } = req.body;
       sql = `INSERT INTO
-            Business(pirmary_contact_name, pirmary_contact_title, tax_id_number, business_name, customer_id)
-            VALUES('${pirmary_contact_name}', '${pirmary_contact_title}', '${tax_id_number}', '${business_name}', ${insertId});`;
+            Business(primary_contact_name, primary_contact_title, tax_id_number, business_name, customer_id)
+            VALUES('${primary_contact_name}', '${primary_contact_title}', '${tax_id_number}', '${business_name}', ${insertId});`;
     }
     const result = await pool.queryAsync(sql);
     res.send(result);
