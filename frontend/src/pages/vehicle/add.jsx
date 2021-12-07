@@ -6,7 +6,7 @@ import { domain } from '../../config';
 const { Option } = Select;
 
 const AddVehicle = () => {
-  const [isCar, setIsCar] = useState(true);
+  const [isCar, setIsCar] = useState(false);
   const [isConvertible, setIsConvertible] = useState(false);
   const [isTruck, setIsTruck] = useState(false);
   const [isVanMinivan, setIsVanMinivan] = useState(false);
@@ -82,7 +82,7 @@ const AddVehicle = () => {
     else {
       condition = {...values, vehicle_type: "vanMinivan", USERNAME: sessionStorage.getItem('username')};
     }
-    console.log(condition);
+    console.log(condition.vin);
 
     try {
       const result = await axios.post(`${domain}vehicle/add`, condition);
@@ -91,6 +91,7 @@ const AddVehicle = () => {
       } else {
         message.success("Successfully added vehicle.");
         console.log(result);
+        window.location = `/vehicle/${condition.vin}/${condition.vehicle_type}`;
       }
     } catch(err) {
       message.error("Add Vehicle failed. Please try again.");
@@ -99,9 +100,9 @@ const AddVehicle = () => {
   }
 
   return (
-    sessionStorage.getItem('usertype') ?
+    sessionStorage.getItem('usertype') === "Owner" || sessionStorage.getItem('usertype') === "Inventory Clerk" ?
     <div>
-      <Select placeholder="Select a option and change input text above" onChange={onChange}>
+      <Select placeholder="Select the vehicle type" onChange={onChange}>
         <Option value="car">Car</Option>
         <Option value="convertible">Convertible</Option>
         <Option value="truck">Truck</Option>
@@ -195,7 +196,7 @@ const AddVehicle = () => {
         <Form.Item label="Invoice Price" name="invoice_price" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item label="Description" name="description" rules={[{required: true}]}><Input /></Form.Item>
         <Form.Item label="Cargo Capacity" name="cargo_capacity" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
-        <Form.Item label="Cargo Cover Type" name="cargo_cover_type" rules={[{required: true}]}><Input /></Form.Item>
+        <Form.Item label="Cargo Cover Type" name="cargo_cover_type" rules={[{required: false}]}><Input /></Form.Item>
         <Form.Item label="Number of Rear Axles" name="number_of_rear_axles" rules={[{required: true}]}><InputNumber min={0} /></Form.Item>
         <Form.Item wrapperCol={{ offset: 4, span: 16, }}>
           <Button type="primary" htmlType="submit">Submit</Button>
@@ -270,7 +271,8 @@ const AddVehicle = () => {
     </div>
     :
     <div>
-      <h1>No Access to this page. Please login.</h1>
+      <h1>Add Vehicle</h1>
+      <h1>No Access to this page. Please login as Inventory Clerk or Owner.</h1>
     </div>
   );
 }

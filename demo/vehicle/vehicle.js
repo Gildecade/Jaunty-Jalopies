@@ -18,9 +18,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
             FROM
                 VehicleColor as vc    
                 JOIN Vehicle as v
-                ON v.vin = vc.vin 
-            WHERE
-                1 = 1 `;
+                ON v.vin = vc.vin `;
 
     let sql_vin = (USERNAME && vin) ? `AND v.vin = '${vin}' ` : "";
     let sql_vehicle_type = vehicle_type ? `AND v.vehicle_type = '${vehicle_type}' `: "";
@@ -28,7 +26,10 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
     let sql_manufacturer_name = manufacturer_name ? `AND v.manufacturer = '${manufacturer_name}' `: "";
     let sql_model_year = model_year ? `AND v.model_year = ${model_year} `: "";
     let sql_list_price = (list_price && operand) ? `AND v.invoice_price*1.25 ${operand} ${list_price} `: "";
-    let sql_key_word = key_word ? `AND v.description LIKE "%${key_word}%" `: "";
+    let sql_key_word = key_word ? `AND (v.description LIKE "%${key_word}%" 
+    OR v.manufacturer LIKE "%${key_word}%" 
+    OR v.model_year LIKE "%${key_word}%" 
+    OR v.model_name LIKE "%${key_word}%") `: "";
 
     let sql_tail =     `AND v.vin NOT IN 
                     ( SELECT vin 
@@ -64,7 +65,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
                         VehicleColor as vc
                         JOIN Vehicle as v
                         ON v.vin = vc.vin 
-                    WHERE
+                        AND
                         v.vin IN (${vin_list})
                     GROUP BY vc.vin
                     ORDER BY vin ASC`;
@@ -149,7 +150,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
             case "truck":
                 const { cargo_capacity, cargo_cover_type, number_of_rear_axles } = req.body;
                 sql = cargo_cover_type? `INSERT INTO Truck
-                VALUES ('${vin}', ${cargo_capacity}, ${cargo_cover_type}, ${number_of_rear_axles});`: 
+                VALUES ('${vin}', ${cargo_capacity}, '${cargo_cover_type}', ${number_of_rear_axles});`: 
                 `INSERT INTO Truck(vin, cargo_capacity, number_of_rear_axles)
                 VALUES ('${vin}', ${cargo_capacity}, ${number_of_rear_axles});`;
                 break;
@@ -396,7 +397,7 @@ router.post('/id', async (req, res) => {
  router.post('/get_price', async (req, res) => {
 
   const { vin } = req.body;
-  let sql = `SELECT invoice_price 
+  let sql = `SELECT invoice_price, added_date 
   From Vehicle
   WHERE vin = '${vin}'`;
   
@@ -417,6 +418,25 @@ router.post('/id', async (req, res) => {
  *    all customers ID
  */
  router.post('/get_customers', async (req, res) => {
+  let sql = `SELECT id FROM Customer`;
+  
+  try {
+      const pool = await database('DEMO').pool();
+      const customer_result = await pool.queryAsync(sql);
+      res.send(customer_result);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({error: err});
+  }
+});
+
+/**
+ * view all customers ID in DB
+ * Input: NULL
+ * Ouput: 
+ *    all customers ID
+ */
+ router.post('/get_vehicle_number', async (req, res) => {
   let sql = `SELECT id FROM Customer`;
   
   try {

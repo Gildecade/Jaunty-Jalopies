@@ -12,6 +12,7 @@ const SellVehicleForm = () => {
   const { vin } = useParams();
   const [ price, setPrice] = useState([]);
   const [ customers, setCustomers] = useState([]);
+  const [ added_date, setAddedDate] = useState([]);
 
 
   const [form] = Form.useForm();
@@ -21,9 +22,12 @@ const SellVehicleForm = () => {
       const price_result = await axios.post(`${domain}vehicle/get_price`, {vin: vin});
       const customers = await axios.post(`${domain}vehicle/get_customers`);
       const price = price_result.data.map(price => price.invoice_price)[0];
+      const added_date = price_result.data.map(date => date.added_date.substring(0, 10))[0];
       const data = customers.data.map(customer => customer.id);
-      setCustomers(data)
+      setCustomers(data);
+      setAddedDate(added_date);
       setPrice(price);
+      console.log(added_date);
     }
     initialize();
   }, []);
@@ -33,6 +37,11 @@ const SellVehicleForm = () => {
       message.warn("Sold price is too low!");
       return;
     }
+    if (values.current_date.isBefore(added_date)) {
+      message.warn("Sold date is before added date!");
+      return;
+    }
+    console.log(values.current_date.isBefore(added_date));
     try {
       const result = await axios.post(`${domain}vehicle/sell`, {...values, vin: vin, USERNAME: sessionStorage.getItem('username')});
       if (result.data.msg) {
@@ -51,7 +60,8 @@ const SellVehicleForm = () => {
     <div>
       <Form form={form} onFinish={onFinish} labelCol={{ span: 4, }} wrapperCol={{ span: 8, }}>
         <Form.Item label="VIN" name="vin" rules={[{required: false}]}><Input defaultValue={vin} disabled /></Form.Item>
-        <Form.Item label="Added Date" name="current_date" rules={[{required: true}]}><DatePicker /></Form.Item>
+        <Form.Item label="Added Date" name="added_date" rules={[{required: false}]}><Input defaultValue={added_date} disabled /></Form.Item>
+        <Form.Item label="Sold Date" name="current_date" rules={[{required: true}]}><DatePicker /></Form.Item>
         <Form.Item label="Customer ID" name="customer_id" rules={[{required: true}]}>
           <Select placeholder="Select a option and change input text above" allowClear>
             {customers.map(customer => (
