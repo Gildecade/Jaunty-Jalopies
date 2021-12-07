@@ -40,7 +40,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
       
     
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         let result = await pool.queryAsync(sql);
     
         // if no vehicle exists
@@ -100,7 +100,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
                 WHERE vin = '${vin}'`;
   
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         const vehicleRecord = await pool.queryAsync(sql);
         
         // if vechile exsits, cannot be added
@@ -211,7 +211,7 @@ const database = require('scf-nodejs-serverlessdb-sdk').database;
 //     let sql = `SELECT * FROM ${type} WHERE vin = '${vin}'`;
     
 //     try {
-//       const pool = await database('TEST').pool();
+//       const pool = await database('DEMO').pool();
 //       const vehicleTypeData = await pool.queryAsync(sql);
   
 //       if (!usertype || usertype == 'Inventory Clerks' || usertype == 'Salespeople' || usertype == 'Service Writer') {
@@ -248,7 +248,7 @@ router.post('/id', async (req, res) => {
 
   let sql = `SELECT * FROM Vehicle WHERE vin = '${vin}'`;
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const vehicle = await pool.queryAsync(sql);
 
     sql = `SELECT * FROM ${type} WHERE vin = '${vin}'`;
@@ -269,7 +269,7 @@ router.post('/id', async (req, res) => {
 
   const sql = `SELECT * FROM Sale WHERE vin = '${vin}'`;
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const sale = await pool.queryAsync(sql);
     res.send(sale);
   } catch(err) {
@@ -287,7 +287,7 @@ router.post('/id', async (req, res) => {
 
   const sql = `SELECT * FROM Repair WHERE vin = '${vin}'`;
   try {
-    const pool = await database('TEST').pool();
+    const pool = await database('DEMO').pool();
     const repair = await pool.queryAsync(sql);
     res.send(repair);
   } catch(err) {
@@ -307,7 +307,7 @@ router.post('/id', async (req, res) => {
     let sql = `SELECT * FROM Color`;
     
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         const color_result = await pool.queryAsync(sql);
         res.send(color_result);
     } catch (err) {
@@ -326,7 +326,7 @@ router.post('/id', async (req, res) => {
     let sql = `SELECT * FROM Manufacturer`;
     
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         const manufacturer_result = await pool.queryAsync(sql);
         res.send(manufacturer_result);
     } catch (err) {
@@ -347,7 +347,7 @@ router.post('/id', async (req, res) => {
     VALUES (${manufacturer})`;
     
     try {
-        const pool = await database('TEST').pool();
+        const pool = await database('DEMO').pool();
         const add_manufacturer_result = await pool.queryAsync(sql);
         res.send(add_manufacturer_result);
     } catch (err) {
@@ -370,7 +370,7 @@ router.post('/id', async (req, res) => {
   WHERE vin = '${vin}'`;
   
   try {
-      const pool = await database('TEST').pool();
+      const pool = await database('DEMO').pool();
       const vin_result = await pool.queryAsync(sql);
 
       if (vin_result.length != 0) {
@@ -401,7 +401,7 @@ router.post('/id', async (req, res) => {
   WHERE vin = '${vin}'`;
   
   try {
-      const pool = await database('TEST').pool();
+      const pool = await database('DEMO').pool();
       const price_result = await pool.queryAsync(sql);
       res.send(price_result);
   } catch (err) {
@@ -420,7 +420,7 @@ router.post('/id', async (req, res) => {
   let sql = `SELECT id FROM Customer`;
   
   try {
-      const pool = await database('TEST').pool();
+      const pool = await database('DEMO').pool();
       const customer_result = await pool.queryAsync(sql);
       res.send(customer_result);
   } catch (err) {
