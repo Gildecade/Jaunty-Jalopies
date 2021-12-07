@@ -21,8 +21,10 @@ const Repair = () => {
             const result = await axios.post(`${domain}repair/view`, condition);
             if (result.data.length === 0) {
                 message.info("No repair data found. Please try again.");
+                return
             } else if (result.data['msg']) {
                 message.warn(result.data['msg']);
+                return
             } else {
                 message.success("Successfully found repair data.");
             }
@@ -41,6 +43,8 @@ const Repair = () => {
     return (
         permission ?
             <div>
+                <h1>View Repair</h1>
+                <br></br>
                 <Form
                     layout='inline'
                     form={form}
@@ -84,7 +88,8 @@ const Repair = () => {
             </div>
             :
             <div>
-                <h1>No Access to this page. Please login.</h1>
+                <h1>View Repair</h1>
+                <h1>No Access to this page. Please login as Service Writer or Owner.</h1>
             </div>
     );
 }

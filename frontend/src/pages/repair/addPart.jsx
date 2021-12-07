@@ -34,6 +34,8 @@ const AddPartForm = () => {
     return (
         permission ?
             <div>
+                <h1>Add Parts</h1>
+                <br></br>
                 <div style={{ height: 40 }}></div>
                 <Form labelCol={{ span: 4, }} wrapperCol={{ span: 8, }} onFinish={onFinish}>
                     <Form.Item label="Vin" name="vin" rules={[{ required: true }]}><Input /></Form.Item>
@@ -42,7 +44,7 @@ const AddPartForm = () => {
                             <DatePicker onChange={(date, dateString) => setInputDate(dateString)} />
                         </Space>
                     </Form.Item>
-                    <Form.Item label="Part Number" name="part_number" rules={[{ required: true, pattern: constraint, message: notification }]}><Input /></Form.Item>
+                    <Form.Item label="Part Number" name="part_number" rules={[{ required: true }]}><Input /></Form.Item>
                     <Form.Item label="Vendor Name" name="vendor_name" rules={[{ required: true }]}><Input /></Form.Item>
                     <Form.Item label="Price" name="price" rules={[{ required: true, pattern: constraint, message: notification }]}><Input /></Form.Item>
                     <Form.Item label="Quantity" name="quantity" rules={[{ required: true, pattern: constraint, message: notification }]}><Input /></Form.Item>
@@ -55,7 +57,8 @@ const AddPartForm = () => {
             </div>
             :
             <div>
-                <h1>No Access to this page. Please login.</h1>
+                <h1>Add Parts</h1>
+                <h1>No Access to this page. Please login as Service Writer or Owner.</h1>
             </div>
     );
 }
