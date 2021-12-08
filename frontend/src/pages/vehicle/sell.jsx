@@ -60,7 +60,6 @@ const SellVehicleForm = () => {
     <div>
       <Form form={form} onFinish={onFinish} labelCol={{ span: 4, }} wrapperCol={{ span: 8, }}>
         <Form.Item label="VIN" name="vin" rules={[{required: false}]}><Input defaultValue={vin} disabled /></Form.Item>
-        <Form.Item label="Added Date" name="added_date" rules={[{required: false}]}><Input defaultValue={added_date} disabled /></Form.Item>
         <Form.Item label="Sold Date" name="current_date" rules={[{required: true}]}><DatePicker /></Form.Item>
         <Form.Item label="Customer ID" name="customer_id" rules={[{required: true}]}>
           <Select placeholder="Select a option and change input text above" allowClear>
