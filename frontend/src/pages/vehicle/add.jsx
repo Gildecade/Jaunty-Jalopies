@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Select, Form, Input, Button, message, DatePicker, InputNumber } from 'antd';
 import axios from 'axios';
 import { domain } from '../../config';
+import {  Link } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -121,6 +122,9 @@ const AddVehicle = () => {
             ))}
           </Select>
         </Form.Item>
+        <Link to={`/vehicle/addManufacturer`} >
+          <Button type="link" >Add manufacturer</Button>
+        </Link>
         <Form.Item label="Manufacturer" name="manufacturer_name" rules={[{required: true}]}>
           <Select placeholder="Select a option and change input text above" allowClear>
             {manufacturers.map(manufacturer => (
@@ -151,6 +155,9 @@ const AddVehicle = () => {
             ))}
           </Select>
         </Form.Item>
+        <Link to={`/vehicle/addManufacturer`}>
+          <Button type="link">Add manufacturer</Button>
+        </Link>
         <Form.Item label="Manufacturer" name="manufacturer_name" rules={[{required: true}]}>
           <Select placeholder="Select a option and change input text above" allowClear>
             {manufacturers.map(manufacturer => (
@@ -183,6 +190,9 @@ const AddVehicle = () => {
             ))}
           </Select>
         </Form.Item>
+        <Link to={`/vehicle/addManufacturer`}>
+          <Button type="link">Add manufacturer</Button>
+        </Link>
         <Form.Item label="Manufacturer" name="manufacturer_name" rules={[{required: true}]}>
           <Select placeholder="Select a option and change input text above" allowClear>
             {manufacturers.map(manufacturer => (
@@ -216,6 +226,9 @@ const AddVehicle = () => {
             ))}
           </Select>
         </Form.Item>
+        <Link to={`/vehicle/addManufacturer`}>
+          <Button type="link">Add manufacturer</Button>
+        </Link>
         <Form.Item label="Manufacturer" name="manufacturer_name" rules={[{required: true}]}>
           <Select placeholder="Select a option and change input text above" allowClear>
             {manufacturers.map(manufacturer => (
@@ -247,6 +260,9 @@ const AddVehicle = () => {
             ))}
           </Select>
         </Form.Item>
+        <Link to={`/vehicle/addManufacturer`}>
+          <Button type="link">Add manufacturer</Button>
+        </Link>
         <Form.Item label="Manufacturer" name="manufacturer_name" rules={[{required: true}]}>
           <Select placeholder="Select a option and change input text above" allowClear>
             {manufacturers.map(manufacturer => (

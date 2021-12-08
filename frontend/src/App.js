@@ -37,6 +37,7 @@ import MonthlySaleDetail from './pages/sales/monthlySaleDetail';
 import SearchVehicleForm from './pages/vehicle/search';
 import AddVehicle from './pages/vehicle/add';
 import SellVehicleForm from './pages/vehicle/sell';
+import AddManufacturerForm from './pages/vehicle/addManufacturer';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -115,6 +116,7 @@ const App = () => {
               <Route path="/vehicle/search" element={<SearchVehicleForm />} />
               <Route path="/vehicle/add" element={<AddVehicle />} />
               <Route path="/vehicle/sell/:vin" element={<SellVehicleForm />} />
+              <Route path="/vehicle/addManufacturer" element={<AddManufacturerForm />} />
             </Routes>
           </div>
         </Content>

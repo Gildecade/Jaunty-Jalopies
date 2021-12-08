@@ -433,7 +433,7 @@ router.post('/id', async (req, res) => {
  router.post('/add_manufacturer', async (req, res) => {
     const { manufacturer } = req.body;
     let sql = `Insert INTO Manufacturer
-    VALUES (${manufacturer})`;
+    VALUES ('${manufacturer}')`;
     
     try {
         const pool = await database('DEMO').pool();
